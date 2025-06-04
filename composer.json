@@ -1,0 +1,24 @@
+{
+    "name": "carril/touchepasauklaxon",
+    "description": "Application MVC PHP Touche pas au klaxon",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "Touchepasauklaxon\\": "app/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Ludovic CARRIL"
+        }
+    ],
+    "require": {
+        "izniburak/router": "^3.0"
+  },
+    "require-dev": {
+        "phpstan/phpstan": "^2.1",
+        "phpunit/phpunit": "^10.5",
+        "squizlabs/php_codesniffer": "^3.13",
+        "phpdocumentor/reflection-docblock": "^5.6"
+    }
+}

@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Ne rien faire si le fichier ou dossier existe
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+
+    # Rediriger uniquement les URLs sans point (exclut .php, .css, etc.)
+    RewriteCond %{REQUEST_URI} !\.[a-zA-Z0-9]{2,4}$
+
+    # Ne pas réécrire si on appelle déjà index.php
+    RewriteCond %{REQUEST_URI} !^/index\.php$
+
+    # Rediriger vers index.php
+    RewriteRule ^ index.php [QSA,L]
+</IfModule>

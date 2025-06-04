@@ -1,0 +1,29 @@
+{
+  "name": "touchepasauklaxon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "npx sass public/css/main.scss public/css/style.css"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luddu73/CEF-Devoir9.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/luddu73/CEF-Devoir9/issues"
+  },
+  "homepage": "https://github.com/luddu73/CEF-Devoir9#readme",
+  "devDependencies": {
+    "bootstrap": "^5.3.6",
+    "sass": "^1.89.1"
+  }
+}
