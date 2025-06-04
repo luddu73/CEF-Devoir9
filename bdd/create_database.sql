@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS `touchepasauklaxon`.`users` (
   `email` VARCHAR(250) NOT NULL,
   `password` VARCHAR(255) NOT NULL,
   `tel` VARCHAR(15) NOT NULL,
+  `isAdmin` TINYINT(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`id`),
   UNIQUE INDEX `id_UNIQUE` (`id` ASC) VISIBLE,
   UNIQUE INDEX `email_UNIQUE` (`email` ASC) VISIBLE)

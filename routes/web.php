@@ -14,4 +14,5 @@ $router->get('/', function(){
 
 $router->get('/home', callController('HomeController', 'index'));
 $router->get('/test-bdd', callController('HomeController', 'testBdd'));
-
+$router->post('/login', callController('AuthController', 'login'));
+$router->get('/logout', callController('AuthController', 'logout'));
