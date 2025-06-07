@@ -9,18 +9,43 @@ use PDOException;
 class Trajet {
     private $db;
 
+    private $lastError;
+
     public function __construct() {
         $this->db = Database::getConnection();
     }
 
     public function getAll() {
-        $stmt = $this->db->prepare("SELECT * FROM trajets");
-        $stmt->execute();
-        return $stmt->fetchAll();
+        try{
+            $stmt = $this->db->prepare("
+                SELECT t.id, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS ville_depart, a2.ville AS ville_arrivee, t.places 
+                FROM trajets t 
+                JOIN users u ON t.auteur = u.id 
+                JOIN agences a1 ON t.agence_depart = a1.id 
+                JOIN agences a2 ON t.agence_destination = a2.id");
+            $stmt->execute();
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des trajets : " . $e->getMessage());
+            $this->lastError = "Une erreur technique est survenue lors de la récupération des trajets. Veuillez réessayer plus tard.";
+            return [];
+        }
     }
 
     public function getById(int $id) {
-        $stmt = $this->db->prepare("SELECT * FROM trajets WHERE id = ?");
+        try {
+            $stmt = $this->db->prepare("
+                SELECT t.id, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS ville_depart, a2.ville AS ville_arrivee, t.places 
+                FROM trajets t 
+                JOIN users u ON t.auteur = u.id 
+                JOIN agences a1 ON t.agence_depart = a1.id 
+                JOIN agences a2 ON t.agence_destination = a2.id
+                WHERE t.id = ?");
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération du trajet : " . $e->getMessage());
+            $this->lastError = "Une erreur technique est survenue lors de la récupération du trajet. Veuillez réessayer plus tard.";
+            return null;
+        }
         $stmt->execute([$id]);
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
@@ -32,9 +57,10 @@ class Trajet {
         }
         catch (PDOException $e) {
             error_log("Erreur lors de la suppression du trajet : " . $e->getMessage());
+            $this->lastError = "Une erreur technique est survenue lors de la suppression du trajet. Veuillez réessayer plus tard.";
             return false;
         }
-        
+
     }
 
     public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId) {
@@ -44,7 +70,12 @@ class Trajet {
         } 
         catch (PDOException $e) {
             error_log("Erreur lors de la mise à jour du trajet : " . $e->getMessage());
+            $this->lastError = "Une erreur technique est survenue lors de la mise à jour du trajet. Veuillez réessayer plus tard.";
             return false;
         }
+    }
+
+    public function getLastError() {
+        return $this->lastError ?? null;
     }
 }
