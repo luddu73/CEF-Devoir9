@@ -44,7 +44,7 @@ class AuthController
                     'isAdmin' => $user['isAdmin']
                 ];
                 echo "Connexion réussie !";
-                header("Location: /dashboard");
+                header("Location: /");
                 exit;
             } 
             else

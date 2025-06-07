@@ -7,10 +7,18 @@ use Touchepasauklaxon\Models\Trajet;
 
 class AdminController extends Auth
 {
+
+    private function prepare()
+    {
+        if (session_status() === PHP_SESSION_NONE) {
+            session_start();
+        }
+        return Auth::requireAdmin();
+    }
+
     public function index() 
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
         $userModel = new User();
         $users = $userModel->getAll();
 
@@ -34,8 +42,7 @@ class AdminController extends Auth
 
     public function agences()
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
         echo "<h1>Gestion des agences</h1>";
         echo "<p>Cette section est réservée à la gestion des agences.</p>";
         if (isset($_SESSION['flashMsg'])) {
@@ -96,8 +103,7 @@ class AdminController extends Auth
 
     public function addAgence()
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ville = trim($_POST['ville']);
             if (!empty($ville)) {
@@ -119,8 +125,7 @@ class AdminController extends Auth
 
     public function editAgence()
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $ville = trim($_POST['ville']);
             if (!empty($ville)) {
@@ -142,8 +147,7 @@ class AdminController extends Auth
 
     public function deleteAgence()
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID d'agence invalide.";
@@ -163,8 +167,7 @@ class AdminController extends Auth
 
     public function trajets()
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
 
         echo "<h1>Gestion des trajets</h1>";
         echo "<p>Cette section est réservée à la gestion des trajets.</p>";
@@ -207,8 +210,7 @@ class AdminController extends Auth
 
     public function deleteTrajet()
     {
-        session_start();
-        Auth::requireAdmin();
+        $this->prepare();
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID de trajet invalide.";

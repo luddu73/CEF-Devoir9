@@ -10,7 +10,6 @@ function callController(string $controller, string $method)
 
 $router->get('/', callController('HomeController', 'index'));
 $router->get('/login', callController('HomeController', 'login'));
-$router->get('/test-bdd', callController('HomeController', 'testBdd'));
 $router->post('/login', callController('AuthController', 'login'));
 $router->get('/logout', callController('AuthController', 'logout'));
 $router->get('/admin', callController('AdminController', 'index'));
