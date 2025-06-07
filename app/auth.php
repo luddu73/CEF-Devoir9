@@ -17,7 +17,7 @@ class Auth
     public static function requireAdmin(): void
     {
         if (!self::isAdmin()) {
-            header("Location: /dashboard");
+            header("Location: /");
             exit;
         }
     }

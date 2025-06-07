@@ -8,4 +8,12 @@
 <body>
     <header>
         TOUCHE PAS AU KLAXON
+        <right>
+            <?php if (!$isLogged) { ?>
+                <a href="/login">Se connecter</a>
+            <?php } else { ?>
+                <span>Bienvenue <?php echo " ".$_SESSION['user']['nom']." ".$_SESSION['user']['prenom']; ?></span>
+            <a href="/logout">Se déconnecter</a>
+            <?php } ?>
+        </right>
     </header>

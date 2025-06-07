@@ -8,15 +8,11 @@ function callController(string $controller, string $method)
     };
 }
 
-$router->get('/', function(){
-    echo "Bienvenue sur la page d'accueil !";
-});
-
-$router->get('/home', callController('HomeController', 'index'));
+$router->get('/', callController('HomeController', 'index'));
+$router->get('/login', callController('HomeController', 'login'));
 $router->get('/test-bdd', callController('HomeController', 'testBdd'));
 $router->post('/login', callController('AuthController', 'login'));
 $router->get('/logout', callController('AuthController', 'logout'));
-$router->get('/dashboard', callController('DashboardController', 'index'));
 $router->get('/admin', callController('AdminController', 'index'));
 $router->get('/admin/agences', callController('AdminController', 'agences'));
 $router->post('/admin/agences/add', callController('AdminController', 'addAgence'));
