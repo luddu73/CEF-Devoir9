@@ -41,6 +41,7 @@ class AuthController
                     'nom' => $user['nom'],
                     'prenom' => $user['prenom'],
                     'email' => $user['email'],
+                    'tel' => $user['tel'],
                     'isAdmin' => $user['isAdmin']
                 ];
                 echo "Connexion réussie !";

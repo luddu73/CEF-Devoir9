@@ -11,9 +11,16 @@
         <right>
             <?php if (!$isLogged) { ?>
                 <a href="/login">Se connecter</a>
+            <?php } else if ($isAdmin) { ?>
+                <span>Bienvenue <?php echo " ".$_SESSION['user']['nom']." ".$_SESSION['user']['prenom']; ?></span>
+                <a href="/admin">Utilisateurs</a>
+                <a href="/admin/agences">Agences</a>
+                <a href="/admin/trajets">Trajets</a>
+                <a href="/logout">Se déconnecter</a>
             <?php } else { ?>
                 <span>Bienvenue <?php echo " ".$_SESSION['user']['nom']." ".$_SESSION['user']['prenom']; ?></span>
-            <a href="/logout">Se déconnecter</a>
+                <a href="/creer">Créer un trajet</a>
+                <a href="/logout">Se déconnecter</a>
             <?php } ?>
         </right>
     </header>

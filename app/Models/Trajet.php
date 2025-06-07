@@ -18,7 +18,7 @@ class Trajet {
     public function getAll() {
         try{
             $stmt = $this->db->prepare("
-                SELECT t.id, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS ville_depart, a2.ville AS ville_arrivee, t.places 
+                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS ville_depart, a2.ville AS ville_arrivee, t.places 
                 FROM trajets t 
                 JOIN users u ON t.auteur = u.id 
                 JOIN agences a1 ON t.agence_depart = a1.id 
@@ -35,7 +35,7 @@ class Trajet {
     public function getById(int $id) {
         try {
             $stmt = $this->db->prepare("
-                SELECT t.id, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS ville_depart, a2.ville AS ville_arrivee, t.places 
+                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS ville_depart, a2.ville AS ville_arrivee, t.places 
                 FROM trajets t 
                 JOIN users u ON t.auteur = u.id 
                 JOIN agences a1 ON t.agence_depart = a1.id 
@@ -71,6 +71,32 @@ class Trajet {
         catch (PDOException $e) {
             error_log("Erreur lors de la mise à jour du trajet : " . $e->getMessage());
             $this->lastError = "Une erreur technique est survenue lors de la mise à jour du trajet. Veuillez réessayer plus tard.";
+            return false;
+        }
+    }
+
+    public function create(int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId) {
+        try {
+            $stmt = $this->db->prepare("INSERT INTO trajets (auteur, date_depart, date_destination, places, agence_depart, agence_destination) VALUES (?, ?, ?, ?, ?, ?)");
+            return $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $agenceDepartId, $agenceDestinationId]);
+        } 
+        catch (PDOException $e) {
+            $sqlState = $e->getCode();
+
+            switch ($sqlState) {
+                case 'HY000':
+                    $this->lastError = "Conflit avec une contrainte de base de données.";
+                    break;
+                case '42000':
+                    $this->lastError = "Erreur de syntaxe dans la requête SQL.";
+                    break;
+                case '42S02':
+                    $this->lastError = "Table ou colonne inexistante dans la base de données.";
+                    break;
+                default:
+                    $this->lastError = "Une erreur technique est survenue. Veuillez réessayer plus tard.";
+            }
+            error_log("Erreur lors de la création du trajet : " . $e->getMessage());
             return false;
         }
     }
