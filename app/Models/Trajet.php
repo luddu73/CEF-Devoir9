@@ -7,14 +7,17 @@ use DateTime;
 use PDOException;
 
 class Trajet {
-    private $db;
+    private \PDO $db;
 
-    private $lastError;
+    private ?string $lastError = null;
 
     public function __construct() {
         $this->db = Database::getConnection();
     }
-
+    
+    /** 
+     * @return array<int, array<string, mixed>>|false $agences
+     */
     public function getAll() {
         try{
             $stmt = $this->db->prepare("
@@ -31,7 +34,10 @@ class Trajet {
             return [];
         }
     }
-
+    
+    /** 
+     * @return array<int, array<string, mixed>>|null
+     */
     public function getById(int $id) {
         try {
             $stmt = $this->db->prepare("
@@ -50,7 +56,7 @@ class Trajet {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
-    public function deleteById(int $id) {
+    public function deleteById(int $id): bool {
         try {
             $stmt = $this->db->prepare("DELETE FROM trajets WHERE id = ?");
             return $stmt->execute([$id]);
@@ -63,7 +69,7 @@ class Trajet {
 
     }
 
-    public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId) {
+    public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId): bool {
         try {
             $stmt = $this->db->prepare("UPDATE trajets SET auteur = ?, date_depart = ?, date_destination = ?, places = ?, agence_depart = ?, agence_destination = ? WHERE id = ?");
          return $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $agenceDepartId, $agenceDestinationId, $id]);
@@ -75,7 +81,7 @@ class Trajet {
         }
     }
 
-    public function create(int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId) {
+    public function create(int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId): bool {
         try {
             $stmt = $this->db->prepare("INSERT INTO trajets (auteur, date_depart, date_destination, places, agence_depart, agence_destination) VALUES (?, ?, ?, ?, ?, ?)");
             return $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $agenceDepartId, $agenceDestinationId]);
@@ -101,7 +107,7 @@ class Trajet {
         }
     }
 
-    public function getLastError() {
+    public function getLastError(): ?string {
         return $this->lastError ?? null;
     }
 }

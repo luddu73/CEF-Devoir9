@@ -1,5 +1,17 @@
 <?php
-function old(string $key, ?array $trajet = null, $default = '') {
+// On définit des valeurs par défaut si les variables ne sont pas définies
+$action = $action ?? '/add';
+$mode   = $mode ?? 'create';
+$trajet = $trajet ?? null;
+$agences = $agences ?? [];
+
+/**
+ * @param string $key
+ * @param array<string, mixed>|null $trajet
+ * @param string $default
+ * @return string
+ */
+function old(string $key, ?array $trajet = null, string $default = ''): string {
     // Priorité 1 : à la saisie
     if (isset($_SESSION['input'][$key])) return htmlspecialchars($_SESSION['input'][$key]);
     // Priorité 2 : Dans le trajet, on récupère les date départ et destination pour séparer les heures de la date

@@ -5,7 +5,7 @@ use Touchepasauklaxon\Auth;
 
 class AuthController 
 {
-    public function login() 
+    public function login(): void 
     {
         session_start();
         // Si l'utilisateur est déjà connecté, on le redirige ou on affiche un message
@@ -62,7 +62,7 @@ class AuthController
     }
 
 
-    public function logout()
+    public function logout(): void
     {
         session_start();
         session_destroy();

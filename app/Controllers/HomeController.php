@@ -9,7 +9,7 @@ use Touchepasauklaxon\Models\Agence;
 
 class HomeController
 {
-    private function prepare()
+    private function prepare(): bool
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
@@ -17,7 +17,7 @@ class HomeController
         return Auth::isLogged();
     }
 
-    public function index()
+    public function index(): void
     {
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
@@ -74,7 +74,7 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
-    public function login()
+    public function login(): void
     {
         $isLogged = $this->prepare();
         if ($isLogged) {
@@ -88,7 +88,7 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
-    public function createTrajetForm()
+    public function createTrajetForm(): void
     {
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
@@ -103,18 +103,12 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
-    public function editTrajetForm(int $id)
+    public function editTrajetForm(int $id): void
     {
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
        if(!$isLogged) {
             header('Location: /login');
-            exit;
-        }
-
-        if (!isset($id) || !is_numeric($id)) {
-            $_SESSION['flashMsg'] = "ID de trajet invalide.";
-            header('Location: /');
             exit;
         }
 
@@ -139,7 +133,10 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
-    private function controleTrajet()
+    /**
+     * @return array<int, string>
+     */
+    private function controleTrajet(): array
     {
         $dateDepart = $_POST['date_depart'] ?? '';
         $dateDestination = $_POST['date_destination'] ?? '';
@@ -186,7 +183,7 @@ class HomeController
         return $errors;
     }
 
-    public function createTrajet()
+    public function createTrajet(): void
     {
         $isLogged = $this->prepare();
        if(!$isLogged) {
@@ -222,17 +219,11 @@ class HomeController
         }
     }
 
-    public function updateTrajet(int $id)
+    public function updateTrajet(int $id): void
     {
         $isLogged = $this->prepare();
        if(!$isLogged) {
             header('Location: /login');
-            exit;
-        }
-
-        if (!isset($id) || !is_numeric($id)) {
-            $_SESSION['flashMsg'] = "ID de trajet invalide.";
-            header('Location: /');
             exit;
         }
 
@@ -277,7 +268,7 @@ class HomeController
         }
     }
 
-    public function deleteTrajet()
+    public function deleteTrajet(): void
     {
         $isLogged = $this->prepare();
        if(!$isLogged) {
@@ -313,7 +304,9 @@ class HomeController
         header('Location: /');
         exit;
     }
-
+    /**
+     * @param array<string, mixed> $data
+     */
     private function json(array $data, int $status = 200): void 
     {
         http_response_code($status);
@@ -322,17 +315,13 @@ class HomeController
         exit;
     }
 
-    public function viewTrajet(int $id)
+    public function viewTrajet(int $id): void
     {
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
        if(!$isLogged) {
             header('Location: /login');
             exit;
-        }
-
-        if (!isset($id) || !is_numeric($id)) {
-            $this->json(['error' => 'ID de trajet invalide'], 400);
         }
 
         $trajetModel = new Trajet();

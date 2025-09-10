@@ -22,7 +22,10 @@ class Auth
         }
     }
 
-    public static function getUser()
+    /**
+     * @return array<string, mixed>|null
+     */
+    public static function getUser(): ?array
     {
         return self::isLogged() ? $_SESSION['user'] : null;
     }

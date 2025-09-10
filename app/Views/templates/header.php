@@ -1,3 +1,5 @@
+<?php $isLogged = $isLogged ?? ''; ?>
+<?php $isAdmin = $isAdmin ?? ''; ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>

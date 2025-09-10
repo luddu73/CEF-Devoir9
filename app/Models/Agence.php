@@ -6,15 +6,18 @@ use PDO;
 use PDOException;
 
 class Agence {
-    private $db;
+    private \PDO $db;
 
-    private $lastError;
+    private ?string $lastError = null;
 
     public function __construct() {
         $this->db = Database::getConnection();
     }
-
-    public function getAll() {
+    /** 
+     * @return array<int, array<string, mixed>>|false $agences
+     */
+    public function getAll()
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM agences");
             $stmt->execute();
@@ -36,7 +39,9 @@ class Agence {
         }
         return $stmt->fetchAll();
     }
-
+    /** 
+     * @return array<int, array<string, mixed>>|false $agences
+     */
     public function getById(int $id) {
         try {
             $stmt = $this->db->prepare("SELECT * FROM agences WHERE id = ?");
@@ -60,7 +65,8 @@ class Agence {
         }
     }
 
-    public function deleteById(int $id) {
+    public function deleteById(int $id): bool
+    {
         try {
             $stmt = $this->db->prepare("DELETE FROM agences WHERE id = ?");
             return $stmt->execute([$id]);
@@ -90,7 +96,8 @@ class Agence {
         }
     }
 
-    public function updateById(int $id, string $ville) {
+    public function updateById(int $id, string $ville): bool
+    {
         try {
             $stmt = $this->db->prepare("UPDATE agences SET ville = ? WHERE id = ?");
             return $stmt->execute([$ville, $id]);
@@ -120,7 +127,8 @@ class Agence {
         }
     }
 
-    public function add(string $ville) {
+    public function add(string $ville): bool
+    {
         try {
             $stmt = $this->db->prepare("INSERT INTO agences (ville) VALUES (?)");
             return $stmt->execute([$ville]);
@@ -150,7 +158,8 @@ class Agence {
         }
     }
 
-    public function getLastError() {
+    public function getLastError(): ?string
+    {
         return $this->lastError ?? null;
     }
 }

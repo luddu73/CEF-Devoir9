@@ -1,3 +1,4 @@
+<?php /** @var array<string, mixed> $trajet */ ?>
 <h1>Modification du trajet #<?= (int)$trajet['id'] ?></h1>
 <?php if (!empty($_SESSION['form_errors'])): ?>
     <div class="errors">

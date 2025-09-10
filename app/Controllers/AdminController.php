@@ -8,15 +8,15 @@ use Touchepasauklaxon\Models\Trajet;
 class AdminController extends Auth
 {
 
-    private function prepare()
+    private function prepare(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
             session_start();
         }
-        return Auth::requireAdmin();
+        Auth::requireAdmin();
     }
 
-    public function index() 
+    public function index(): void
     {
         $this->prepare();
         $userModel = new User();
@@ -28,7 +28,7 @@ class AdminController extends Auth
         
         foreach ($users as $user) {
             echo "<tr>";
-            echo "<td>" . htmlspecialchars($user['id']) . "</td>";
+            echo "<td>" . htmlspecialchars((int)$user['id']) . "</td>";
             echo "<td>" . htmlspecialchars($user['nom']) . "</td>";
             echo "<td>" . htmlspecialchars($user['prenom']) . "</td>";
             echo "<td>" . htmlspecialchars($user['email']) . "</td>";
@@ -40,7 +40,7 @@ class AdminController extends Auth
         echo "</table>";
     }
 
-    public function agences()
+    public function agences(): void
     {
         $this->prepare();
         echo "<h1>Gestion des agences</h1>";
@@ -101,7 +101,7 @@ class AdminController extends Auth
         <?php 
     }
 
-    public function addAgence()
+    public function addAgence(): void
     {
         $this->prepare();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -123,7 +123,7 @@ class AdminController extends Auth
         exit;
     }
 
-    public function editAgence()
+    public function editAgence(): void
     {
         $this->prepare();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
@@ -145,7 +145,7 @@ class AdminController extends Auth
         exit;
     }
 
-    public function deleteAgence()
+    public function deleteAgence(): void
     {
         $this->prepare();
 
@@ -165,7 +165,7 @@ class AdminController extends Auth
         exit;
     }
 
-    public function trajets()
+    public function trajets(): void
     {
         $this->prepare();
 
@@ -208,7 +208,7 @@ class AdminController extends Auth
         echo "</table>";
     }
 
-    public function deleteTrajet()
+    public function deleteTrajet(): void
     {
         $this->prepare();
 

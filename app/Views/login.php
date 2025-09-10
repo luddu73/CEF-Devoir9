@@ -1,3 +1,4 @@
+<?php /** @var string $title */ ?>
 <h1><?= $title ?></h1>
 <p>Bienvenue sur Touche pas au Klaxon !</p>
 <form method="post" action="/login">
