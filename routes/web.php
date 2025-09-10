@@ -16,6 +16,7 @@ $router->get('/creer', callController('HomeController', 'createTrajetForm'));
 $router->get('/modifier/:id', callController('HomeController', 'editTrajetForm'));
 $router->post('/add', callController('HomeController', 'createTrajet'));
 $router->patch('/update/:id', callController('HomeController', 'updateTrajet'));
+$router->get('/detail/:id', callController('HomeController', 'viewTrajet'));
 $router->post('/delete', callController('HomeController', 'deleteTrajet'));
 $router->get('/admin', callController('AdminController', 'index'));
 $router->get('/admin/agences', callController('AdminController', 'agences'));

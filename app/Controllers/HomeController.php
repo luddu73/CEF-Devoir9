@@ -53,10 +53,9 @@ class HomeController
                 echo "<td>" . htmlspecialchars($trajet['places']) . "</td>";
                 if ($isLogged) {
                     echo "<td>";
-                    echo "<form method='POST' action='/detail' style='display:inline;'>";
-                    echo "<input type='hidden' name='id' value='" . htmlspecialchars($trajet['id']) . "'>";
-                    echo "<input type='submit' value='Details'>";
-                    echo "</form>";
+                    echo "<a href='/detail/" . htmlspecialchars($trajet['id']) . "' style='display:inline;'>";
+                    echo "<input type='button' value='Details'>";
+                    echo "</a>";
                   if($trajet['auteur'] === $_SESSION['user']['id']) {
                         echo "<a href='/modifier/" . htmlspecialchars($trajet['id']) . "' style='display:inline;'>";
                         echo "<input type='button' value='Modifier'>";
@@ -313,5 +312,41 @@ class HomeController
         }
         header('Location: /');
         exit;
+    }
+
+    private function json(array $data, int $status = 200): void 
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+
+    public function viewTrajet(int $id)
+    {
+        $isLogged = $this->prepare();
+        $isAdmin = Auth::isAdmin();
+       if(!$isLogged) {
+            header('Location: /login');
+            exit;
+        }
+
+        if (!isset($id) || !is_numeric($id)) {
+            $this->json(['error' => 'ID de trajet invalide'], 400);
+        }
+
+        $trajetModel = new Trajet();
+        $trajet = $trajetModel->getById($id);
+        if (!$trajet) {
+            $this->json(['error' => 'Trajet non trouvé'], 404);
+        }
+
+        $this->json([
+            'id' => (int)$trajet['id'],
+            'auteur' => htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']),
+            'auteur_tel' => htmlspecialchars($trajet['auteur_tel']),
+            'auteur_email' => htmlspecialchars($trajet['auteur_email']),
+            'places' => (int)$trajet['places']
+        ]);
     }
 }
