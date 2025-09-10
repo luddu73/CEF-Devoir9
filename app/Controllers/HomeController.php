@@ -223,6 +223,61 @@ class HomeController
         }
     }
 
+    public function updateTrajet(int $id)
+    {
+        $isLogged = $this->prepare();
+       if(!$isLogged) {
+            header('Location: /login');
+            exit;
+        }
+
+        if (!isset($id) || !is_numeric($id)) {
+            $_SESSION['flashMsg'] = "ID de trajet invalide.";
+            header('Location: /');
+            exit;
+        }
+
+        $trajetModel = new Trajet();
+        $trajet = $trajetModel->getById($id);
+        if (!$trajet) {
+            $_SESSION['flashMsg'] = "Trajet non trouvé.";
+            header('Location: /');
+            exit;
+        }
+
+        if ($trajet['auteur'] !== $_SESSION['user']['id']) {
+            $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à modifier ce trajet.";
+            header('Location: /');
+            exit;
+        }
+
+        $errors = $this->controleTrajet();
+
+        if(!empty($errors)) {
+            $_SESSION['form_errors'] = $errors;
+            $_SESSION['input'] = $_POST;
+            header('Location: /modifier/' . $id);
+            exit;
+        }
+        else {
+            $villeDepart = $_POST['agence_depart'] ?? '';
+            $villeArrivee = $_POST['agence_destination'] ?? '';
+            $places = $_POST['places'] ?? '';
+            $dateDepart = new \DateTime($_POST['date_depart'] . ' ' . $_POST['heure_depart']);
+            $dateDestination = new \DateTime($_POST['date_destination'] . ' ' . $_POST['heure_destination']);
+            if($trajetModel->updateById($id, $_SESSION['user']['id'], $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
+                $_SESSION['flashMsg'] = "Trajet modifié avec succès.";
+                $_SESSION['input'] = $_POST;
+                header('Location: /modifier/' . $id);
+            } else {
+                $_SESSION['flashMsg'] = "Erreur lors de la modification du trajet : " . $trajetModel->getLastError();
+                $_SESSION['input'] = $_POST;
+                header('Location: /modifier/' . $id);
+            }
+            exit;
+        }
+    }
+
     public function deleteTrajet()
     {
         $isLogged = $this->prepare();

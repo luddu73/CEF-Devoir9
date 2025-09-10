@@ -65,7 +65,7 @@ function old(string $key, ?array $trajet = null, $default = '') {
         <option value="">Sélectionnez une agence</option>
         <?php $selectedDepart = old('agence_depart', $trajet);
         foreach ($agences as $ag): ?>
-            <option value="<?= (int)$ag['id'] ?>" <?= ((string)$ag['ville'] === (string)$selectedDepart) ? 'selected' : '' ?>>
+            <option value="<?= (int)$ag['id'] ?>" <?= ((string)$ag['ville'] === (string)$selectedDepart || (string)$ag['id'] === (string)$selectedDepart) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($ag['ville']) ?>
             </option>
         <?php endforeach; ?>
@@ -77,7 +77,7 @@ function old(string $key, ?array $trajet = null, $default = '') {
         <option value="">Sélectionnez une agence</option>
         <?php $selectedArrivee = old('agence_destination', $trajet); ?>
         <?php foreach ($agences as $ag): ?>
-            <option value="<?= (int)$ag['id'] ?>" <?= ((string)$ag['ville'] === (string)$selectedArrivee) ? 'selected' : '' ?>>
+            <option value="<?= (int)$ag['id'] ?>" <?= ((string)$ag['ville'] === (string)$selectedArrivee || (string)$ag['id'] === (string)$selectedArrivee) ? 'selected' : '' ?>>
                 <?= htmlspecialchars($ag['ville']) ?>
             </option>
         <?php endforeach; ?>
