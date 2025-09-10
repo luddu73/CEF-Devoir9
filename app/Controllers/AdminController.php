@@ -193,8 +193,8 @@ class AdminController extends Auth
                 echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['ville_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['ville_arrivee']) . "</td>";
+                echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
+                echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['places']) . "</td>";
                 echo "<td>";
                 echo "<form method='POST' action='/admin/trajets/delete' style='display:inline;'>";

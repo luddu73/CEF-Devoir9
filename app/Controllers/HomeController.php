@@ -48,25 +48,24 @@ class HomeController
                 echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['ville_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['ville_arrivee']) . "</td>";
+                echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
+                echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['places']) . "</td>";
                 if ($isLogged) {
                     echo "<td>";
-                    echo "<form method='POST' action='/trajets/reserver' style='display:inline;'>";
+                    echo "<form method='POST' action='/detail' style='display:inline;'>";
                     echo "<input type='hidden' name='id' value='" . htmlspecialchars($trajet['id']) . "'>";
                     echo "<input type='submit' value='Details'>";
                     echo "</form>";
-                  //  if($trajet['auteur'] === $_SESSION['user']['id']) {
-                        echo "<form method='POST' action='/modifier' style='display:inline;'>";
-                        echo "<input type='hidden' name='id' value='" . htmlspecialchars($trajet['id']) . "'>";
-                        echo "<input type='submit' value='Modifier'>";
-                        echo "</form>";
+                  if($trajet['auteur'] === $_SESSION['user']['id']) {
+                        echo "<a href='/modifier/" . htmlspecialchars($trajet['id']) . "' style='display:inline;'>";
+                        echo "<input type='button' value='Modifier'>";
+                        echo "</a>";
                         echo "<form method='POST' action='/delete' style='display:inline;'>";
                         echo "<input type='hidden' name='id' value='" . htmlspecialchars($trajet['id']) . "'>";
                         echo "<input type='submit' value='Supprimer'>";
                         echo "</form>";
-                 //   }
+                    }
                 }
                 echo "</tr>";
             }
@@ -105,12 +104,48 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    public function editTrajetForm(int $id)
+    {
+        $isLogged = $this->prepare();
+        $isAdmin = Auth::isAdmin();
+       if(!$isLogged) {
+            header('Location: /login');
+            exit;
+        }
+
+        if (!isset($id) || !is_numeric($id)) {
+            $_SESSION['flashMsg'] = "ID de trajet invalide.";
+            header('Location: /');
+            exit;
+        }
+
+        $trajetModel = new Trajet();
+        $trajet = $trajetModel->getById($id);
+        if (!$trajet) {
+            $_SESSION['flashMsg'] = "Trajet non trouvé.";
+            header('Location: /');
+            exit;
+        }
+
+        if ($trajet['auteur'] !== $_SESSION['user']['id']) {
+            $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à modifier ce trajet.";
+            header('Location: /');
+            exit;
+        }
+
+        $title = 'Modifier un trajet - Touche pas au Klaxon';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+        $agences = (new Agence())->getAll();
+        require_once dirname(__DIR__, 2) . '/app/Views/modif-trajet.php';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
+    }
+
     private function controleTrajet()
     {
         $dateDepart = $_POST['date_depart'] ?? '';
         $dateDestination = $_POST['date_destination'] ?? '';
-        $villeDepart = $_POST['ville_depart'] ?? '';
-        $villeArrivee = $_POST['ville_arrivee'] ?? '';
+        $villeDepart = $_POST['agence_depart'] ?? '';
+        $villeArrivee = $_POST['agence_destination'] ?? '';
         $heureDepart = $_POST['heure_depart'] ?? '';
         $heureDestination = $_POST['heure_destination'] ?? '';
         $places = $_POST['places'] ?? '';
@@ -169,8 +204,8 @@ class HomeController
             exit;
         }
         else {
-            $villeDepart = $_POST['ville_depart'] ?? '';
-            $villeArrivee = $_POST['ville_arrivee'] ?? '';
+            $villeDepart = $_POST['agence_depart'] ?? '';
+            $villeArrivee = $_POST['agence_destination'] ?? '';
             $places = $_POST['places'] ?? '';
             $dateDepart = new \DateTime($_POST['date_depart'] . ' ' . $_POST['heure_depart']);
             $dateDestination = new \DateTime($_POST['date_destination'] . ' ' . $_POST['heure_destination']);
