@@ -155,8 +155,10 @@ class AdminController extends Auth
             exit;
         }
 
+        $id = (int) $_POST['id'];
+
         $agenceModel = new Agence();
-        if ($agenceModel->deleteById($_POST['id'])) {
+        if ($agenceModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Agence supprimée avec succès.";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression de l'agence : " . $agenceModel->getLastError();
@@ -218,8 +220,10 @@ class AdminController extends Auth
             exit;
         }
 
+        $id = (int) $_POST['id'];
+
         $trajetModel = new Trajet();
-        if ($trajetModel->deleteById($_POST['id'])) {
+        if ($trajetModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Trajet supprimé avec succès.";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression du trajet : " . $trajetModel->getLastError();

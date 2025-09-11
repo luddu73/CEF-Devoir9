@@ -153,12 +153,20 @@ class HomeController
         $dateDestinationOnly = \DateTime::createFromFormat('Y-m-d', $dateDestination);
 
         $errors = [];
+        
+        // On arrête les vérifications si les dates sont invalides
+        if($dateDepartOnly && $dateDepartTime && $dateDestinationOnly && $dateDestinationTime) {
+        } else {
+            $errors[] = "Format de date ou d'heure invalide.";
+            return $errors; 
+        }
+
 
         // On vérifie que la date de départ n'est pas antérieure à aujourd'hui
         if($dateDepartOnly < (new \DateTime())->setTime(0, 0)) {
             $errors[] = "La date de départ ne peut pas être antérieure à aujourd'hui.";
         }
-        // Départ ce jour, on vérifie que l'heure n'est pas passée
+         // Départ ce jour, on vérifie que l'heure n'est pas passée
         if($dateDepartOnly->format('Y-m-d') === $now->format('Y-m-d') && $dateDepartTime->format("H:i") < $now->format("H:i")) {
             $errors[] = "L'heure de départ aujourd'hui ne peut pas être antérieure à l'heure actuelle.";
         }
@@ -283,7 +291,8 @@ class HomeController
         }
 
         $trajetModel = new Trajet();
-        $trajeta = $trajetModel->getById($_POST['id']);
+        $id = (int) $_POST['id'];
+        $trajeta = $trajetModel->getById($id);
         if (!$trajeta) {
             $_SESSION['flashMsg'] = "Trajet non trouvé.";
             header('Location: /');
@@ -296,7 +305,7 @@ class HomeController
             exit;
         }
 
-        if ($trajetModel->deleteById($_POST['id'])) {
+        if ($trajetModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Trajet supprimé avec succès.";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression du trajet : " . $trajetModel->getLastError();

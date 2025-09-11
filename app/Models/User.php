@@ -25,8 +25,9 @@ class User {
      * }>
      */
     public function getAll(): array {
-        $stmt = $this->db->query("SELECT * FROM users");
-        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt = $this->db->prepare("SELECT * FROM users");
+        $stmt->execute();
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         return $rows;
     }
 
