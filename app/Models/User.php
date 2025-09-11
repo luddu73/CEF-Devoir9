@@ -31,7 +31,7 @@ class User {
     }
 
     /**
-     * @return array<int, array{
+     * @return array{
      *   id:int,
      *   nom:string,
      *   prenom:string,
@@ -39,7 +39,7 @@ class User {
      *   tel:string,
      *   password:string,
      *   isAdmin:int
-     * }>
+     * }|null
      */
     public function getByEmail(string $email): ?array {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");

@@ -36,7 +36,19 @@ class Trajet {
     }
     
     /** 
-     * @return array<int, array<string, mixed>>|null
+     * @return array{
+     *   id:int,
+     *   auteur:int,
+     *   date_depart:DateTime,
+     *   date_destination:DateTime,
+     *   agence_depart:int,
+     *   agence_destination:int,
+     *   auteur_nom:string,
+     *   auteur_prenom:string,
+     *   auteur_tel:string,
+     *   auteur_email:string,
+     *   places:int
+     * }|null
      */
     public function getById(int $id) {
         try {

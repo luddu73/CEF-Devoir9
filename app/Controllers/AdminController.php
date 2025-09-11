@@ -28,12 +28,12 @@ class AdminController extends Auth
         
         foreach ($users as $user) {
             echo "<tr>";
-            echo "<td>" . htmlspecialchars((int)$user['id']) . "</td>";
+            echo "<td>" . $user['id'] . "</td>";
             echo "<td>" . htmlspecialchars($user['nom']) . "</td>";
             echo "<td>" . htmlspecialchars($user['prenom']) . "</td>";
             echo "<td>" . htmlspecialchars($user['email']) . "</td>";
             echo "<td>" . htmlspecialchars($user['tel']) . "</td>";
-            echo "<td>" . ($user['isAdmin'] ? 'Administrateur' : 'Utilisateur') . "</td>";
+            echo "<td>" . ($user['isAdmin'] == 1 ? 'Administrateur' : 'Utilisateur') . "</td>";
             echo "</tr>";
         }
         
