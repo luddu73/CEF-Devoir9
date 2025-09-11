@@ -45,8 +45,9 @@ class AdminController extends Auth
         $this->prepare();
         echo "<h1>Gestion des agences</h1>";
         echo "<p>Cette section est réservée à la gestion des agences.</p>";
-        if (isset($_SESSION['flashMsg'])) {
-            echo "<p><center>" . htmlspecialchars($_SESSION['flashMsg']) . "</center></p>";
+        $flashMsg = $_SESSION['flashMsg'] ?? null;
+        if (is_string($flashMsg)) {
+            echo "<p><center>" . $flashMsg . "</center></p>";
             unset($_SESSION['flashMsg']);
         }
         $agenceModel = new Agence();
@@ -63,14 +64,14 @@ class AdminController extends Auth
         } else {
             foreach ($agences as $agence) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($agence['id']) . "</td>";
-                echo "<td id='ville-cell-". htmlspecialchars($agence['id']) ."'>";
+                echo "<td>" . (int)($agence['id']) . "</td>";
+                echo "<td id='ville-cell-". (int)($agence['id']) ."'>";
                 echo htmlspecialchars($agence['ville']);
-                echo " | <button onclick='enableEdit(" . htmlspecialchars($agence['id']) . ", " . json_encode($agence['ville']) . ")'>Modifier</button>";
+                echo " | <button onclick='enableEdit(" . (int)($agence['id']) . ", " . json_encode($agence['ville']) . ")'>Modifier</button>";
                 echo "</td>";
                 echo "<td>";
                 echo "<form method='POST' action='/admin/agences/delete' style='display:inline;'>";
-                echo "<input type='hidden' name='id' value='" . htmlspecialchars($agence['id']) . "'>";
+                echo "<input type='hidden' name='id' value='" . (int)($agence['id']) . "'>";
                 echo "<input type='submit' value='Supprimer'>";
                 echo "</form>";
                 echo "</td>";
@@ -105,7 +106,8 @@ class AdminController extends Auth
     {
         $this->prepare();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $ville = trim($_POST['ville']);
+            $ville = $_POST['ville'] ?? null;
+            $ville = is_string($ville) ? trim($ville) : '';
             if (!empty($ville)) {
                 $agenceModel = new Agence();
                 if ($agenceModel->add($ville)) {
@@ -127,10 +129,12 @@ class AdminController extends Auth
     {
         $this->prepare();
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $ville = trim($_POST['ville']);
+            $ville = $_POST['ville'] ?? null;
+            $ville = is_string($ville) ? trim($ville) : '';
             if (!empty($ville)) {
                 $agenceModel = new Agence();
-                if ($agenceModel->updateById($_POST['id'], $ville)) {
+                $id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int) $_POST['id'] : 0;
+                if ($agenceModel->updateById($id, $ville)) {
                     $_SESSION['flashMsg'] = "Agence modifiée avec succès.";
                 } else {
                     $_SESSION['flashMsg'] = "Erreur lors de la modification de l'agence : " . $agenceModel->getLastError();
@@ -173,8 +177,9 @@ class AdminController extends Auth
 
         echo "<h1>Gestion des trajets</h1>";
         echo "<p>Cette section est réservée à la gestion des trajets.</p>";
-        if (isset($_SESSION['flashMsg'])) {
-            echo "<p><center>" . htmlspecialchars($_SESSION['flashMsg']) . "</center></p>";
+        $flashMsg = $_SESSION['flashMsg'] ?? null;
+        if (is_string($flashMsg)) {
+            echo "<p><center>" . htmlspecialchars($flashMsg) . "</center></p>";
             unset($_SESSION['flashMsg']);
         }
 
@@ -191,16 +196,16 @@ class AdminController extends Auth
         } else {
             foreach ($trajets as $trajet) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($trajet['id']) . "</td>";
+                echo "<td>" . (int)$trajet['id'] . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['places']) . "</td>";
+                echo "<td>" . (int)$trajet['places'] . "</td>";
                 echo "<td>";
                 echo "<form method='POST' action='/admin/trajets/delete' style='display:inline;'>";
-                echo "<input type='hidden' name='id' value='" . htmlspecialchars($trajet['id']) . "'>";
+                echo "<input type='hidden' name='id' value='" . (int)$trajet['id'] . "'>";
                 echo "<input type='submit' value='Supprimer'>";
                 echo "</form>";
                 echo "</td>";

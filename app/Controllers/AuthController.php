@@ -26,7 +26,7 @@ class AuthController
                 exit;
             }
 
-            $email = trim($_POST['email']);
+            $email = is_string($_POST['email']) ? trim($_POST['email']) : '';
             $password = $_POST['password'];
 
             $userModel = new User();

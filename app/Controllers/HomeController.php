@@ -26,8 +26,9 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
-        if (isset($_SESSION['flashMsg'])) {
-            echo "<p><center>" . htmlspecialchars($_SESSION['flashMsg']) . "</center></p>";
+        $flashMsg = $_SESSION['flashMsg'] ?? null;
+        if (is_string($flashMsg)) {
+            echo "<p><center>" . htmlspecialchars($flashMsg) . "</center></p>";
             unset($_SESSION['flashMsg']);
         }
         echo "<h2>Liste des trajets</h2>";
@@ -44,24 +45,25 @@ class HomeController
         } else {
             foreach ($trajets as $trajet) {
                 echo "<tr>";
-                echo "<td>" . htmlspecialchars($trajet['id']) . "</td>";
+                echo "<td>" . (int)($trajet['id']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
                 echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['places']) . "</td>";
+                echo "<td>" . (int)($trajet['places']) . "</td>";
                 if ($isLogged) {
                     echo "<td>";
-                    echo "<a href='/detail/" . htmlspecialchars($trajet['id']) . "' style='display:inline;'>";
+                    echo "<a href='/detail/" . (int)($trajet['id']) . "' style='display:inline;'>";
                     echo "<input type='button' value='Details'>";
                     echo "</a>";
-                  if($trajet['auteur'] === $_SESSION['user']['id']) {
-                        echo "<a href='/modifier/" . htmlspecialchars($trajet['id']) . "' style='display:inline;'>";
+                    $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
+                    if($trajet['auteur'] === $userId) {
+                        echo "<a href='/modifier/" . (int)($trajet['id']) . "' style='display:inline;'>";
                         echo "<input type='button' value='Modifier'>";
                         echo "</a>";
                         echo "<form method='POST' action='/delete' style='display:inline;'>";
-                        echo "<input type='hidden' name='id' value='" . htmlspecialchars($trajet['id']) . "'>";
+                        echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
                         echo "<input type='submit' value='Supprimer'>";
                         echo "</form>";
                     }
@@ -120,7 +122,8 @@ class HomeController
             exit;
         }
 
-        if ($trajet['auteur'] !== $_SESSION['user']['id']) {
+        $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
+        if ($trajet['auteur'] !== $userId) {
             $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à modifier ce trajet.";
             header('Location: /');
             exit;

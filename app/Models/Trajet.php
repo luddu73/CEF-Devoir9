@@ -14,10 +14,20 @@ class Trajet {
     public function __construct() {
         $this->db = Database::getConnection();
     }
-    
-    /** 
-     * @return array<int, array<string, mixed>>|false $agences
-     */
+
+     /** 
+      * @return array<int, array{
+      *   id:int,
+      *   auteur:int,
+      *   auteur_nom:string,
+      *   auteur_prenom:string,
+      *   date_depart:string,
+      *   date_destination:string,
+      *   agence_depart:string,
+      *   agence_destination:string,
+      *   places:int
+      * }>|false $trajets
+      */
     public function getAll() {
         try{
             $stmt = $this->db->prepare("
@@ -59,13 +69,36 @@ class Trajet {
                 JOIN agences a1 ON t.agence_depart = a1.id 
                 JOIN agences a2 ON t.agence_destination = a2.id
                 WHERE t.id = ?");
+
+            $stmt->execute([$id]);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!is_array($result) || !isset($result['id']) || !isset($result['auteur']) || !isset($result['date_depart']) || !isset($result['date_destination']) || !isset($result['agence_depart']) || !isset($result['agence_destination']) || !isset($result['auteur_nom']) || !isset($result['auteur_prenom']) || !isset($result['auteur_tel']) || !isset($result['auteur_email']) || !isset($result['places'])) {
+                return null;
+            }
+            if (!is_numeric($result['id']) || !is_numeric($result['places'])) {
+                return null;
+            }
+            return [
+                'id' => (int)$result['id'],
+                'auteur' => (int)$result['auteur'],
+                'date_depart' => new DateTime($result['date_depart']),
+                'date_destination' => new DateTime($result['date_destination']),
+                'agence_depart' => (int)$result['agence_depart'],
+                'agence_destination' => (int)$result['agence_destination'],
+                'auteur_nom' => (string)$result['auteur_nom'],
+                'auteur_prenom' => (string)$result['auteur_prenom'],
+                'auteur_tel' => (string)$result['auteur_tel'],
+                'auteur_email' => (string)$result['auteur_email'],
+                'places' => (int)$result['places']
+            ];
+
+
+
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération du trajet : " . $e->getMessage());
             $this->lastError = "Une erreur technique est survenue lors de la récupération du trajet. Veuillez réessayer plus tard.";
             return null;
         }
-        $stmt->execute([$id]);
-        return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
     public function deleteById(int $id): bool {

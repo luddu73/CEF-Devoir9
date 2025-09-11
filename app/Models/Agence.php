@@ -13,10 +13,14 @@ class Agence {
     public function __construct() {
         $this->db = Database::getConnection();
     }
+
     /** 
-     * @return array<int, array<string, mixed>>|false $agences
-     */
-    public function getAll()
+      * @return array<int, array{
+      *   id:int,
+      *   ville:string
+      * }>|false $agences
+      */
+    public function getAll(): array|false
     {
         try {
             $stmt = $this->db->prepare("SELECT * FROM agences");
@@ -39,14 +43,31 @@ class Agence {
         }
         return $stmt->fetchAll();
     }
+    
     /** 
-     * @return array<int, array<string, mixed>>|false $agences
-     */
-    public function getById(int $id) {
+      * @return array<int, array{
+      *   id:int,
+      *   ville:string
+      * }>|false $agences
+      */
+    public function getById(int $id): array|false
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM agences WHERE id = ?");
             $stmt->execute([$id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!is_array($result) || !isset($result['id'], $result['ville'])) {
+                return [];
+            }
+            if (!is_numeric($result['id'])) {
+                return [];
+            }
+            return [
+                [
+                    'id' => (int)$result['id'],
+                    'ville' => (string)$result['ville']
+                ]
+            ];
         } catch (PDOException $e) {
             $sqlState = $e->getCode();
 
@@ -95,7 +116,9 @@ class Agence {
             return false;
         }
     }
-
+    /**
+     * @return bool
+     */
     public function updateById(int $id, string $ville): bool
     {
         try {
