@@ -153,7 +153,7 @@ class HomeController
         $dateDestinationOnly = \DateTime::createFromFormat('Y-m-d', $dateDestination);
 
         $errors = [];
-        
+
         // On arrête les vérifications si les dates sont invalides
         if($dateDepartOnly && $dateDepartTime && $dateDestinationOnly && $dateDestinationTime) {
         } else {
@@ -337,6 +337,7 @@ class HomeController
         $trajet = $trajetModel->getById($id);
         if (!$trajet) {
             $this->json(['error' => 'Trajet non trouvé'], 404);
+            return;
         }
 
         $this->json([
