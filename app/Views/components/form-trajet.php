@@ -20,6 +20,9 @@ function h(?string $v): string {
 }
 
 /** Extrait une string sûre depuis $source[$key] */
+/**
+ * @param array<string, mixed>|null $source
+ */
 function fromArrayString(?array $source, string $key, string $default = ''): string {
     if (!$source) return $default;
     $v = $source[$key] ?? null;
@@ -43,6 +46,8 @@ function fmtDateTime(mixed $v, string $format): string {
  * 1) $_SESSION['input'][$key] si string
  * 2) sinon depuis $trajet (avec séparation date/heure)
  * 3) sinon $default
+ *
+ * @param array<string, mixed>|null $trajet
  */
 function old(string $key, ?array $trajet = null, string $default = ''): string {
     $input = isset($_SESSION['input']) && is_array($_SESSION['input']) ? $_SESSION['input'] : [];

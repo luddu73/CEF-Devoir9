@@ -142,11 +142,23 @@ class HomeController
     private function controleTrajet(): array
     {
         $dateDepart = $_POST['date_depart'] ?? '';
+        if (!is_string($dateDepart)) {
+            $dateDepart = '';
+        }
         $dateDestination = $_POST['date_destination'] ?? '';
+        if (!is_string($dateDestination)) {
+            $dateDestination = '';
+        }
         $villeDepart = $_POST['agence_depart'] ?? '';
         $villeArrivee = $_POST['agence_destination'] ?? '';
         $heureDepart = $_POST['heure_depart'] ?? '';
+        if (!is_string($heureDepart)) {
+            $heureDepart = '';
+        }
         $heureDestination = $_POST['heure_destination'] ?? '';
+        if (!is_string($heureDestination)) {
+            $heureDestination = '';
+        }
         $places = $_POST['places'] ?? '';
 
         $now = new \DateTime(); // Date et heure actuelles
@@ -211,13 +223,33 @@ class HomeController
             exit;
         }
         else {
+            $dateDepart = $_POST['date_depart'] ?? '';
+            if (!is_string($dateDepart)) {
+                $dateDepart = '';
+            }
+            $dateDestination = $_POST['date_destination'] ?? '';
+            if (!is_string($dateDestination)) {
+                $dateDestination = '';
+            }
+            $heureDepart = $_POST['heure_depart'] ?? '';
+            if (!is_string($heureDepart)) {
+                $heureDepart = '';
+            }
+            $heureDestination = $_POST['heure_destination'] ?? '';
+            if (!is_string($heureDestination)) {
+                $heureDestination = '';
+            }
             $villeDepart = $_POST['agence_depart'] ?? '';
             $villeArrivee = $_POST['agence_destination'] ?? '';
             $places = $_POST['places'] ?? '';
-            $dateDepart = new \DateTime($_POST['date_depart'] . ' ' . $_POST['heure_depart']);
-            $dateDestination = new \DateTime($_POST['date_destination'] . ' ' . $_POST['heure_destination']);
+            $dateDepart = new \DateTime($dateDepart . ' ' . $heureDepart);
+            $dateDestination = new \DateTime($dateDestination . ' ' . $heureDestination);
             $trajetModel = new Trajet();
-            if($trajetModel->create($_SESSION['user']['id'], $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
+            $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) ? (int)$_SESSION['user']['id'] : 0;
+            $places = (is_numeric($places)) ? (int)$places : 0;
+            $villeDepart = (is_numeric($villeDepart)) ? (int)$villeDepart : 0;
+            $villeArrivee = (is_numeric($villeArrivee)) ? (int)$villeArrivee : 0;
+            if($trajetModel->create($userId, $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
                 $_SESSION['flashMsg'] = "Trajet crée avec succès.";
                 $_SESSION['input'] = $_POST;
                 header('Location: /creer');
@@ -246,7 +278,8 @@ class HomeController
             exit;
         }
 
-        if ($trajet['auteur'] !== $_SESSION['user']['id']) {
+        $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
+        if($trajet['auteur'] !== $userId) {
             $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à modifier ce trajet.";
             header('Location: /');
             exit;
@@ -264,9 +297,29 @@ class HomeController
             $villeDepart = $_POST['agence_depart'] ?? '';
             $villeArrivee = $_POST['agence_destination'] ?? '';
             $places = $_POST['places'] ?? '';
-            $dateDepart = new \DateTime($_POST['date_depart'] . ' ' . $_POST['heure_depart']);
-            $dateDestination = new \DateTime($_POST['date_destination'] . ' ' . $_POST['heure_destination']);
-            if($trajetModel->updateById($id, $_SESSION['user']['id'], $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
+            $dateDepart = $_POST['date_depart'] ?? '';
+            if (!is_string($dateDepart)) {
+                $dateDepart = '';
+            }
+            $dateDestination = $_POST['date_destination'] ?? '';
+            if (!is_string($dateDestination)) {
+                $dateDestination = '';
+            }
+            $heureDepart = $_POST['heure_depart'] ?? '';
+            if (!is_string($heureDepart)) {
+                $heureDepart = '';
+            }
+            $heureDestination = $_POST['heure_destination'] ?? '';
+            if (!is_string($heureDestination)) {
+                $heureDestination = '';
+            }
+            $dateDepart = new \DateTime($dateDepart . ' ' . $heureDepart);
+            $dateDestination = new \DateTime($dateDestination . ' ' . $heureDestination);
+            $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) ? (int)$_SESSION['user']['id'] : 0;
+            $places = (is_numeric($places)) ? (int)$places : 0;
+            $villeDepart = (is_numeric($villeDepart)) ? (int)$villeDepart : 0;
+            $villeArrivee = (is_numeric($villeArrivee)) ? (int)$villeArrivee : 0;
+            if($trajetModel->updateById($id, $userId, $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
                 $_SESSION['flashMsg'] = "Trajet modifié avec succès.";
                 $_SESSION['input'] = $_POST;
                 header('Location: /modifier/' . $id);
@@ -302,7 +355,8 @@ class HomeController
             exit;
         }
 
-        if ($trajeta['auteur'] !== $_SESSION['user']['id'] && !Auth::isAdmin()) {
+        $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
+        if ($trajeta['auteur'] !== $userId && !Auth::isAdmin()) {
             $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à supprimer ce trajet.";
             header('Location: /');
             exit;

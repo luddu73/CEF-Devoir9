@@ -126,6 +126,16 @@ class Trajet {
         }
     }
 
+    /** 
+     * @param int $userId
+     * @param DateTime $date_depart
+     * @param DateTime $date_destination
+     * @param int $places
+     * @param int $agenceDepartId
+     * @param int $agenceDestinationId
+     * @return bool
+     */
+
     public function create(int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId): bool {
         try {
             $stmt = $this->db->prepare("INSERT INTO trajets (auteur, date_depart, date_destination, places, agence_depart, agence_destination) VALUES (?, ?, ?, ?, ?, ?)");
