@@ -11,8 +11,8 @@ class Trajet {
 
     private ?string $lastError = null;
 
-    public function __construct() {
-        $this->db = Database::getConnection();
+    public function __construct(?PDO $db = null) {
+        $this->db = $db ?? Database::getConnection();
     }
 
      /** 

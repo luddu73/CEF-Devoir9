@@ -7,10 +7,8 @@ use PDO;
 class User {
     private PDO $db;
 
-    public function __construct() {
-        $this->db = Database::getConnection();
-        // Si possible, fais aussi ça dans Database::getConnection():
-        // $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
+    public function __construct(?PDO $db = null) {
+        $this->db = $db ?? Database::getConnection();
     }
 
     /**
