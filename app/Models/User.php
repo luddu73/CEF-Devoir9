@@ -42,7 +42,7 @@ class User {
      */
     public function getByEmail(string $email): ?array {
         $stmt = $this->db->prepare("SELECT * FROM users WHERE email = :email LIMIT 1");
-        $stmt->execute(['email' => $email]);
+        $stmt->execute([':email' => $email]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if (is_array($row)
             && isset($row['id'], $row['nom'], $row['prenom'], $row['email'], $row['tel'], $row['password'], $row['isAdmin'])

@@ -9,6 +9,12 @@ final class UserTest extends TestCase
      * Tests pour getAll()
      * --------------------------- */
 
+    /**
+     * @testdox getAll() retourne un tableau de 2 utilisateurs avec les bonnes colonnes
+     *
+     * Objectif : vérifier que le modèle exécute la requête SELECT et renvoie un array
+     * contenant les lignes telles que renvoyées par PDO, sans transformation indésirable.
+     */
     public function testGetAllReturnsArrayOfUsers(): void
     {
         $sql = "SELECT * FROM users";
@@ -33,6 +39,11 @@ final class UserTest extends TestCase
         $this->assertSame('Marie', $result[1]['prenom']);
     }
 
+    /**
+     * @testdox getAll() renvoie un tableau vide quand il n’y a aucune ligne
+     *
+     * Objectif : s’assurer que le modèle normalise correctement le cas sans résultats.
+     */
     public function testGetAllReturnsEmptyArrayWhenNoRows(): void
     {
         $sql = "SELECT * FROM users";
@@ -55,6 +66,15 @@ final class UserTest extends TestCase
      * Tests pour getByEmail()
      * --------------------------- */
 
+    /**
+     * @testdox getByEmail() retourne un utilisateur typé (id int, isAdmin int) quand la ligne est complète
+     *
+     * Objectif :
+     *  - vérifier la requête (email bindé avec :email + LIMIT 1),
+     *  - caster l'id string numérique en int,
+     *  - caster isAdmin string numérique en int,
+     *  - renvoyer un array non nul avec les clés attendues.
+     */
     public function testGetByEmailReturnsTypedUser(): void
     {
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
@@ -86,6 +106,11 @@ final class UserTest extends TestCase
         $this->assertSame(1, $user['isAdmin']);
     }
 
+    /**
+     * @testdox getByEmail() renvoie null quand aucun utilisateur ne correspond
+     *
+     * Objectif : si fetch() renvoie false, la méthode doit renvoyer null.
+     */
     public function testGetByEmailReturnsNullWhenNotFound(): void
     {
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
@@ -105,6 +130,11 @@ final class UserTest extends TestCase
         $this->assertNull($user);
     }
 
+    /**
+     * @testdox getByEmail() renvoie null si une colonne obligatoire manque
+     *
+     * Objectif : robustesse sur le schéma ; si `password` (ou autre clé) manque, retour null.
+     */
     public function testGetByEmailReturnsNullWhenRowMissingAField(): void
     {
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
@@ -133,6 +163,11 @@ final class UserTest extends TestCase
         $this->assertNull($user);
     }
 
+    /**
+     * @testdox getByEmail() renvoie null si un type est invalide (ex: isAdmin non numérique)
+     *
+     * Objectif : si `isAdmin` n’est pas convertible en int, on renvoie null.
+     */
     public function testGetByEmailReturnsNullWhenTypeInvalid(): void
     {
         $sql = "SELECT * FROM users WHERE email = :email LIMIT 1";
@@ -161,6 +196,12 @@ final class UserTest extends TestCase
         $this->assertNull($user);
     }
 
+    /**
+     * @testdox getByEmail() utilise bien le bind `:email` et LIMIT 1 (peu importe le résultat)
+     *
+     * Objectif : test “structurel” de la requête et des paramètres de bind. On s’en fiche
+     * du résultat final, c’est le mock qui valide que la bonne requête/params ont été utilisés.
+     */
     public function testGetByEmailBindsEmailParamAndUsesLimit(): void
     {
         // Ce test vérifie l’exactitude de la requête *et* du bind param
@@ -178,6 +219,6 @@ final class UserTest extends TestCase
         $model = new User($pdo);
         $user = $model->getByEmail('verif@ex.fr');
 
-        $this->assertNull($user); // peu importe le résultat, on voulait valider SQL + bind
+        $this->assertNull($user);
     }
 }

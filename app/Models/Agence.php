@@ -90,9 +90,12 @@ class Agence {
     {
         try {
             $stmt = $this->db->prepare("DELETE FROM agences WHERE id = ?");
-            return $stmt->execute([$id]);
-        }
-        catch (PDOException $e) {
+            $ok = $stmt->execute([$id]);
+            if (!$ok) {
+                return false;
+            }
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
             $sqlState = $e->getCode();
 
             switch ($sqlState) {
@@ -121,9 +124,19 @@ class Agence {
      */
     public function updateById(int $id, string $ville): bool
     {
+        $ville = trim($ville);
+        if ($ville === '') {
+            $this->lastError = "La ville est obligatoire.";
+            return false; 
+        }
+
         try {
             $stmt = $this->db->prepare("UPDATE agences SET ville = ? WHERE id = ?");
-            return $stmt->execute([$ville, $id]);
+            $ok = $stmt->execute([$ville, $id]);
+            if (!$ok) {
+                return false;
+            }
+            return $stmt->rowCount() > 0;
         }
         catch (PDOException $e) {
             $sqlState = $e->getCode();
@@ -152,6 +165,12 @@ class Agence {
 
     public function add(string $ville): bool
     {
+        $ville = trim($ville);
+        if ($ville === '') {
+            $this->lastError = "La ville est obligatoire.";
+            return false; 
+        }
+
         try {
             $stmt = $this->db->prepare("INSERT INTO agences (ville) VALUES (?)");
             return $stmt->execute([$ville]);
