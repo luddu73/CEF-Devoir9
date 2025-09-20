@@ -104,7 +104,11 @@ class Trajet {
     public function deleteById(int $id): bool {
         try {
             $stmt = $this->db->prepare("DELETE FROM trajets WHERE id = ?");
-            return $stmt->execute([$id]);
+            $ok = $stmt->execute([$id]);
+            if (!$ok) {
+                return false;
+            }
+            return $stmt->rowCount() > 0;
         }
         catch (PDOException $e) {
             error_log("Erreur lors de la suppression du trajet : " . $e->getMessage());
@@ -117,7 +121,18 @@ class Trajet {
     public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId): bool {
         try {
             $stmt = $this->db->prepare("UPDATE trajets SET auteur = ?, date_depart = ?, date_destination = ?, places = ?, agence_depart = ?, agence_destination = ? WHERE id = ?");
-         return $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $agenceDepartId, $agenceDestinationId, $id]);
+         $ok = $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $agenceDepartId, $agenceDestinationId, $id]);
+         if(!$ok) {
+            $this->lastError = "Échec de la mise à jour du trajet.";
+             return false;
+         }
+
+         if($stmt->rowCount() === 0) {
+            $this->lastError = "Aucun trajet mis à jour (ID peut-être inexistant ou données identiques).";
+            return false;
+         }
+        return true;
+
         } 
         catch (PDOException $e) {
             error_log("Erreur lors de la mise à jour du trajet : " . $e->getMessage());
