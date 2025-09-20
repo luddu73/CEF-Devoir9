@@ -26,11 +26,6 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
-        $flashMsg = $_SESSION['flashMsg'] ?? null;
-        if (is_string($flashMsg)) {
-            echo "<p><center>" . htmlspecialchars($flashMsg) . "</center></p>";
-            unset($_SESSION['flashMsg']);
-        }
         echo "<h2>Liste des trajets</h2>";
         echo "<table border='1'>";
         echo "<tr><th>ID</th><th>Auteur</th><th>Date de départ</th><th>Date de destination</th><th>Ville de départ</th><th>Ville d'arrivée</th><th>Nombre de places</th>";

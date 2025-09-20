@@ -43,13 +43,12 @@ class AdminController extends Auth
     public function agences(): void
     {
         $this->prepare();
+        $title = 'Gestion des agences - Touche pas au Klaxon';
+
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+
         echo "<h1>Gestion des agences</h1>";
         echo "<p>Cette section est réservée à la gestion des agences.</p>";
-        $flashMsg = $_SESSION['flashMsg'] ?? null;
-        if (is_string($flashMsg)) {
-            echo "<p><center>" . $flashMsg . "</center></p>";
-            unset($_SESSION['flashMsg']);
-        }
         $agenceModel = new Agence();
         $agences = $agenceModel->getAll();
 
