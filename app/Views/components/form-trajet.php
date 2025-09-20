@@ -110,77 +110,99 @@ $versionVal = isset($version) && (is_int($version) || (is_string($version) && ct
             <input type="hidden" name="version" value="<?= $versionVal ?>">
         <?php endif; ?>
     <?php endif; ?>
-
-    <!-- Infos utilisateur (non éditables ici) -->
-    <label>Nom :</label>
-    <input type="text" name="nom" disabled value="<?= h($userNom) ?>">
-    <br>
-    <label>Prénom :</label>
-    <input type="text" name="prenom" disabled value="<?= h($userPrenom) ?>">
-    <br>
-    <label>Email :</label>
-    <input type="email" name="email" disabled value="<?= h($userEmail) ?>">
-    <br>
-    <label>Téléphone :</label>
-    <input type="tel" name="tel" disabled value="<?= h($userTel) ?>">
+    <!-- Champs utilisateur (non modifiables ici) -->
+    <h2>Informations utilisateur</h2>
+    <div class="mb-3">
+        <label for="nom" class="form-label">Nom</label>
+        <input type="text" name="nom" class="form-control" id="inputNom"  disabled value="<?= h($userNom) ?>">
+    </div>
+    <div class="mb-3">
+        <label for="prenom" class="form-label">Prénom</label>
+        <input type="text" name="prenom" class="form-control" id="inputPrenom" disabled value="<?= h($userPrenom) ?>">
+    </div>
+    <div class="mb-3">
+        <label for="email" class="form-label">Email</label>
+        <input type="email" name="email" class="form-control" id="inputEmail" disabled value="<?= h($userEmail) ?>">
+    </div>
+    <div class="mb-3">
+        <label for="tel" class="form-label">Téléphone</label>
+        <input type="text" name="tel" class="form-control" id="inputTel" disabled value="<?= h($userTel) ?>">
+    </div>
     <hr>
-
     <!-- Champs du trajet -->
-    <label for="date_depart">Date de départ :</label>
-    <input type="date" id="date_depart" name="date_depart" required value="<?= old('date_depart', $trajet) ?>">
-    <br>
-
-    <label for="heure_depart">Heure de départ :</label>
-    <input type="time" id="heure_depart" name="heure_depart" required value="<?= old('heure_depart', $trajet) ?>">
-    <br>
-
-    <label for="date_destination">Date de destination :</label>
-    <input type="date" id="date_destination" name="date_destination" required value="<?= old('date_destination', $trajet) ?>">
-    <br>
-
-    <label for="heure_destination">Heure de destination :</label>
-    <input type="time" id="heure_destination" name="heure_destination" required value="<?= old('heure_destination', $trajet) ?>">
-    <br>
-
-    <label for="agence_depart">Agence de départ :</label>
-    <select id="agence_depart" name="agence_depart" required>
-        <option value="">Sélectionnez une agence</option>
-        <?php $selectedDepart = old('agence_depart', $trajet); ?>
-        <?php foreach ($agences as $ag): ?>
-            <?php
-            $agId   = is_int($ag['id']) ? $ag['id'] : (int)$ag['id'];
-            $agVille = (string)$ag['ville']; // safe car filtré plus haut
-            $isSelected = ($agVille === html_entity_decode($selectedDepart)) || ((string)$agId === html_entity_decode($selectedDepart));
-            ?>
-            <option value="<?= $agId ?>" <?= $isSelected ? 'selected' : '' ?>>
-                <?= h($agVille) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <br>
-
-    <label for="agence_destination">Agence d'arrivée :</label>
-    <select id="agence_destination" name="agence_destination" required>
-        <option value="">Sélectionnez une agence</option>
-        <?php $selectedArrivee = old('agence_destination', $trajet); ?>
-        <?php foreach ($agences as $ag): ?>
-            <?php
-            $agId   = is_int($ag['id']) ? $ag['id'] : (int)$ag['id'];
-            $agVille = (string)$ag['ville'];
-            $isSelected = ($agVille === html_entity_decode($selectedArrivee)) || ((string)$agId === html_entity_decode($selectedArrivee));
-            ?>
-            <option value="<?= $agId ?>" <?= $isSelected ? 'selected' : '' ?>>
-                <?= h($agVille) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <br>
-
-    <label for="places">Nombre de places :</label>
-    <input type="number" id="places" name="places" min="1" required value="<?= old('places', $trajet) ?>">
-    <br>
-
-    <button type="submit">
-        <?= $mode === 'edit' ? 'Mettre à jour le trajet' : 'Créer le trajet' ?>
-    </button>
+    <h2>Informations trajet</h2>
+    <div class="d-flex flex-wrap justify-content-between">
+        <div class="col-5">
+            <div class="mb-3">
+                <label for="date_depart" class="form-label">Date de départ</label>
+                <input type="date" name="date_depart" class="form-control" id="inputDateDepart" aria-describedby="dateDepartHelp" value="<?= old('date_depart', $trajet) ?>">
+                <div id="dateDepartHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="heure_depart" class="form-label">Heure de départ</label>
+                <input type="time" name="heure_depart" class="form-control" id="inputHeureDepart" aria-describedby="heureDepartHelp" value="<?= old('heure_depart', $trajet) ?>">
+                <div id="heureDepartHelp" class="form-text">We'll never share your email with anyone else.</div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="mb-3">
+                <label for="date_destination" class="form-label">Date de destination</label>
+                <input type="date" name="date_destination" class="form-control" id="inputDateDestination" aria-describedby="dateDestinationHelp" value="<?= old('date_destination', $trajet) ?>">
+                <div id="dateDestinationHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+            </div>
+            <div class="mb-3">
+                <label for="heure_destination" class="form-label">Heure de destination</label>
+                <input type="time" name="heure_destination" class="form-control" id="inputHeureDestination" aria-describedby="heureDestinationHelp" value="<?= old('heure_destination', $trajet) ?>">
+                <div id="heureDestinationHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="mb-3">
+                <label for="agence_depart" class="form-label">Agence de départ</label>
+                <select id="agence_depart" name="agence_depart" class="form-select" required>
+                    <option value="">Sélectionnez une agence</option>
+                    <?php $selectedDepart = old('agence_depart', $trajet); ?>
+                    <?php foreach ($agences as $ag): ?>
+                        <?php
+                        $agId   = is_int($ag['id']) ? $ag['id'] : (int)$ag['id'];
+                        $agVille = (string)$ag['ville']; // safe car filtré plus haut
+                        $isSelected = ($agVille === html_entity_decode($selectedDepart)) || ((string)$agId === html_entity_decode($selectedDepart));
+                        ?>
+                        <option value="<?= $agId ?>" <?= $isSelected ? 'selected' : '' ?>>
+                            <?= h($agVille) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+        <div class="col-5">
+            <div class="mb-3">
+                <label for="agence_destination" class="form-label">Agence de destination</label>
+                <select id="agence_destination" name="agence_destination" class="form-select" required>
+                    <option value="">Sélectionnez une agence</option>
+                    <?php $selectedArrivee = old('agence_destination', $trajet); ?>
+                    <?php foreach ($agences as $ag): ?>
+                        <?php
+                        $agId   = is_int($ag['id']) ? $ag['id'] : (int)$ag['id'];
+                        $agVille = (string)$ag['ville']; // safe car filtré plus haut
+                        $isSelected = ($agVille === html_entity_decode($selectedArrivee)) || ((string)$agId === html_entity_decode($selectedArrivee));
+                        ?>
+                        <option value="<?= $agId ?>" <?= $isSelected ? 'selected' : '' ?>>
+                            <?= h($agVille) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="mb-3">
+        <label for="places" class="form-label">Nombre de places</label>
+        <input type="number" name="places" class="form-control" id="inputPlaces" aria-describedby="placesHelp" value="<?= old('places', $trajet) ?>">
+        <div id="placesHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+    </div>
+    <div class="text-center">
+        <button type="submit" class="btn btn-primary">
+            <?= $mode === 'edit' ? 'Mettre à jour le trajet' : 'Créer le trajet' ?>
+        </button>
+    </div>
 </form>

@@ -14,15 +14,15 @@ else
     echo '<h1>Trajets proposés</h1>';
 }
 ?>
-<table class="w-100 m-3 text-center" border='1'>
-    <tr>
-        <th>ID</th>
-        <th>Auteur</th>
-        <th>Date de départ</th>
-        <th>Date de destination</th>
-        <th>Ville de départ</th>
-        <th>Ville d'arrivée</th>
-        <th>Nombre de places</th>
+<table class="table w-100 m-3 text-center table-striped" border='1'>
+    <tr class="table-info">
+        <th>Départ</th>
+        <th>Date</th>
+        <th>Heure</th>
+        <th>Destination</th>
+        <th>Date</th>
+        <th>Heure</th>
+        <th>Places</th>
         <?php
         if ($isLogged) {
             echo "<th>Actions</th>";
@@ -36,26 +36,26 @@ else
     } else {
         foreach ($trajets as $trajet) {
             echo "<tr>";
-            echo "<td>" . (int)($trajet['id']) . "</td>";
-            echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
-            echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
-            echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
             echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
+            echo "<td>" . $trajet['date_depart']->format('d/m/Y') . "</td>";
+            echo "<td>" . $trajet['date_depart']->format('H:i') . "</td>";
             echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
+            echo "<td>" . $trajet['date_destination']->format('d/m/Y') . "</td>";
+            echo "<td>" . $trajet['date_destination']->format('H:i') . "</td>";
             echo "<td>" . (int)($trajet['places']) . "</td>";
             if ($isLogged) {
                 echo "<td>";
                 echo "<a href='/detail/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                echo "<input type='button' value='Details'>";
+                echo "<button type='button' class='btn btn-icon' value='Details'><img src='/img/eye.svg' alt='' class='icon'></button>";
                 echo "</a>";
                 $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
                 if($trajet['auteur'] === $userId) {
                     echo "<a href='/modifier/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                    echo "<input type='button' value='Modifier'>";
+                    echo "<button type='button' class='btn btn-icon' value='Modifier'><img src='/img/pen.svg' alt='' class='icon'></button>";
                     echo "</a>";
                     echo "<form method='POST' action='/delete' style='display:inline;'>";
                     echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
-                    echo "<input type='submit' value='Supprimer'>";
+                    echo "<button type='submit' class='btn btn-icon' value='Supprimer'><img src='/img/trash.svg' alt='' class='icon'></button>";
                     echo "</form>";
                 }
             }

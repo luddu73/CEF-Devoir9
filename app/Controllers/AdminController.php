@@ -22,6 +22,9 @@ class AdminController extends Auth
         $userModel = new User();
         $users = $userModel->getAll();
 
+        $title = 'Liste des utilisateurs - Touche pas au Klaxon';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+
         echo "<h1>Liste des utilisateurs</h1>";
         echo "<table border='1'>";
         echo "<tr><th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Rôle</th></tr>";
@@ -38,13 +41,15 @@ class AdminController extends Auth
         }
         
         echo "</table>";
+        
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
     public function agences(): void
     {
         $this->prepare();
+        
         $title = 'Gestion des agences - Touche pas au Klaxon';
-
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
 
         echo "<h1>Gestion des agences</h1>";
@@ -99,6 +104,7 @@ class AdminController extends Auth
             }
         </script>
         <?php 
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
     public function addAgence(): void
@@ -182,6 +188,9 @@ class AdminController extends Auth
             unset($_SESSION['flashMsg']);
         }
 
+        $title = 'Liste des trajets - Touche pas au Klaxon';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
 
@@ -212,6 +221,8 @@ class AdminController extends Auth
             }
         }
         echo "</table>";
+
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
     public function deleteTrajet(): void

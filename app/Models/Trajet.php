@@ -37,7 +37,13 @@ class Trajet {
                 JOIN agences a1 ON t.agence_depart = a1.id 
                 JOIN agences a2 ON t.agence_destination = a2.id");
             $stmt->execute();
-            return $stmt->fetchAll();
+            $rows = $stmt->fetchAll();
+            foreach ($rows as &$r) {
+                if (!empty($r['date_depart']))       { $r['date_depart']       = new DateTime($r['date_depart']); }
+                if (!empty($r['date_destination']))  { $r['date_destination']  = new DateTime($r['date_destination']); }
+            }
+            return $rows;
+
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération des trajets : " . $e->getMessage());
             $this->lastError = "Une erreur technique est survenue lors de la récupération des trajets. Veuillez réessayer plus tard.";

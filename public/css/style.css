@@ -11854,5 +11854,16 @@ textarea.form-control-lg {
     display: none !important;
   }
 }
+.icon {
+  color: #384050;
+  width: 25px;
+  height: 25px;
+}
+
+.btn-icon {
+  border: none;
+  padding: 0;
+  margin: 1px;
+}
 
 /*# sourceMappingURL=style.css.map */

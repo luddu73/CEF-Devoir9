@@ -8,7 +8,7 @@
     <title><?= $title ?? 'Touche pas au klaxon' ?></title>
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="m-auto bg-light">
+<body class="m-auto bg-light d-flex flex-column min-vh-100">
     <header class="bg-primary">
         <nav class="navbar navbar-expand-lg mx-auto">
             <div class="container-fluid text-light">
@@ -16,7 +16,7 @@
             </div>
             <div class="container-fluid text-light">
                 <div class="collapse navbar-collapse d-flex justify-content-end gap-2" id="navbarText">
-                        <?php if (!$isLogged) { ?>
+                        <?php if (!$isLogged AND !$isAdmin) { ?>
                             <button class="btn btn-secondary" onclick="location.href='/login'">Connexion</button>
                         <?php } else if ($isAdmin) { ?>
                             <button class="btn btn-info" onclick="location.href='/admin'">Utilisateurs</button>
@@ -51,7 +51,7 @@
             </div>
         </nav>
     </header>
-    <main class="container m-auto my-3">
+    <main class="container m-auto my-3 flex-fill">
         <?php 
         $flashMsg = $_SESSION['flashMsg'] ?? null;
         if (is_string($flashMsg)) 
