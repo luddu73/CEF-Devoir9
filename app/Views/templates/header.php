@@ -51,13 +51,14 @@
             </div>
         </nav>
     </header>
-    <?php 
-    $flashMsg = $_SESSION['flashMsg'] ?? null;
-    if (is_string($flashMsg)) 
-    { ?>
-        <div class="alert alert-warning col-9 m-auto my-2" role="alert">
-            <?php echo htmlspecialchars((string)$flashMsg); ?>
-        </div>
-    <?php 
-    unset($_SESSION['flashMsg']);
-    } ?>
+    <main class="container m-auto my-3">
+        <?php 
+        $flashMsg = $_SESSION['flashMsg'] ?? null;
+        if (is_string($flashMsg)) 
+        { ?>
+            <div class="alert alert-warning col-9 m-auto my-2" role="alert">
+                <?php echo htmlspecialchars((string)$flashMsg); ?>
+            </div>
+        <?php 
+        unset($_SESSION['flashMsg']);
+        } ?>

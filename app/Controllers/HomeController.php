@@ -22,52 +22,10 @@ class HomeController
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
         $title = 'Accueil - Touche pas au Klaxon';
-
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
-        echo "<h2>Liste des trajets</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Auteur</th><th>Date de départ</th><th>Date de destination</th><th>Ville de départ</th><th>Ville d'arrivée</th><th>Nombre de places</th>";
-        if ($isLogged) {
-            echo "<th>Actions</th>";
-        }
-        echo "</tr>";
-        if($trajetModel->getLastError()) {
-            echo "<tr><td colspan='8'>Erreur lors de la récupération des trajets : " . htmlspecialchars($trajetModel->getLastError()) . "</td></tr>";
-        } elseif (empty($trajets)) {
-            echo "<tr><td colspan='8'>Aucun trajet trouvé.</td></tr>";
-        } else {
-            foreach ($trajets as $trajet) {
-                echo "<tr>";
-                echo "<td>" . (int)($trajet['id']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
-                echo "<td>" . (int)($trajet['places']) . "</td>";
-                if ($isLogged) {
-                    echo "<td>";
-                    echo "<a href='/detail/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                    echo "<input type='button' value='Details'>";
-                    echo "</a>";
-                    $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
-                    if($trajet['auteur'] === $userId) {
-                        echo "<a href='/modifier/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                        echo "<input type='button' value='Modifier'>";
-                        echo "</a>";
-                        echo "<form method='POST' action='/delete' style='display:inline;'>";
-                        echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
-                        echo "<input type='submit' value='Supprimer'>";
-                        echo "</form>";
-                    }
-                }
-                echo "</tr>";
-            }
-        }
-        echo "</table>";
-
+        require_once dirname(__DIR__, 2) . '/app/Views/index.php';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
@@ -78,7 +36,6 @@ class HomeController
             header('Location: /');
             exit;
         }
-
         $title = 'Connexion - Touche pas au Klaxon';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         require_once dirname(__DIR__, 2) . '/app/Views/login.php';
