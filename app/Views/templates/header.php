@@ -9,7 +9,7 @@
 </head>
 <body>
     <header>
-        TOUCHE PAS AU KLAXON
+        <a href="/">TOUCHE PAS AU KLAXON</a>
         <right>
             <?php if (!$isLogged) { ?>
                 <a href="/login">Se connecter</a>
