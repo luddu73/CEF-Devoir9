@@ -6,15 +6,22 @@ use PDO;
 use PDOException;
 
 class Agence {
-    private $db;
+    private \PDO $db;
 
-    private $lastError;
+    private ?string $lastError = null;
 
-    public function __construct() {
-        $this->db = Database::getConnection();
+    public function __construct(?PDO $db = null) {
+        $this->db = $db ?? Database::getConnection();
     }
 
-    public function getAll() {
+    /** 
+      * @return array<int, array{
+      *   id:int,
+      *   ville:string
+      * }>|false $agences
+      */
+    public function getAll(): array|false
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM agences");
             $stmt->execute();
@@ -36,12 +43,31 @@ class Agence {
         }
         return $stmt->fetchAll();
     }
-
-    public function getById(int $id) {
+    
+    /** 
+      * @return array<int, array{
+      *   id:int,
+      *   ville:string
+      * }>|false $agences
+      */
+    public function getById(int $id): array|false
+    {
         try {
             $stmt = $this->db->prepare("SELECT * FROM agences WHERE id = ?");
             $stmt->execute([$id]);
-            return $stmt->fetch(PDO::FETCH_ASSOC);
+            $result = $stmt->fetch(PDO::FETCH_ASSOC);
+            if (!is_array($result) || !isset($result['id'], $result['ville'])) {
+                return [];
+            }
+            if (!is_numeric($result['id'])) {
+                return [];
+            }
+            return [
+                [
+                    'id' => (int)$result['id'],
+                    'ville' => (string)$result['ville']
+                ]
+            ];
         } catch (PDOException $e) {
             $sqlState = $e->getCode();
 
@@ -60,12 +86,16 @@ class Agence {
         }
     }
 
-    public function deleteById(int $id) {
+    public function deleteById(int $id): bool
+    {
         try {
             $stmt = $this->db->prepare("DELETE FROM agences WHERE id = ?");
-            return $stmt->execute([$id]);
-        }
-        catch (PDOException $e) {
+            $ok = $stmt->execute([$id]);
+            if (!$ok) {
+                return false;
+            }
+            return $stmt->rowCount() > 0;
+        } catch (PDOException $e) {
             $sqlState = $e->getCode();
 
             switch ($sqlState) {
@@ -89,11 +119,24 @@ class Agence {
             return false;
         }
     }
+    /**
+     * @return bool
+     */
+    public function updateById(int $id, string $ville): bool
+    {
+        $ville = trim($ville);
+        if ($ville === '') {
+            $this->lastError = "La ville est obligatoire.";
+            return false; 
+        }
 
-    public function updateById(int $id, string $ville) {
         try {
             $stmt = $this->db->prepare("UPDATE agences SET ville = ? WHERE id = ?");
-            return $stmt->execute([$ville, $id]);
+            $ok = $stmt->execute([$ville, $id]);
+            if (!$ok) {
+                return false;
+            }
+            return $stmt->rowCount() > 0;
         }
         catch (PDOException $e) {
             $sqlState = $e->getCode();
@@ -120,7 +163,14 @@ class Agence {
         }
     }
 
-    public function add(string $ville) {
+    public function add(string $ville): bool
+    {
+        $ville = trim($ville);
+        if ($ville === '') {
+            $this->lastError = "La ville est obligatoire.";
+            return false; 
+        }
+
         try {
             $stmt = $this->db->prepare("INSERT INTO agences (ville) VALUES (?)");
             return $stmt->execute([$ville]);
@@ -150,7 +200,8 @@ class Agence {
         }
     }
 
-    public function getLastError() {
+    public function getLastError(): ?string
+    {
         return $this->lastError ?? null;
     }
 }

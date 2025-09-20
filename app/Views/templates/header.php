@@ -1,3 +1,5 @@
+<?php $isLogged = $isLogged ?? ''; ?>
+<?php $isAdmin = $isAdmin ?? ''; ?>
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -12,13 +14,31 @@
             <?php if (!$isLogged) { ?>
                 <a href="/login">Se connecter</a>
             <?php } else if ($isAdmin) { ?>
-                <span>Bienvenue <?php echo " ".$_SESSION['user']['nom']." ".$_SESSION['user']['prenom']; ?></span>
+                <span>Bienvenue <?php
+                    $user = $_SESSION['user'] ?? null;
+                    $prenom = '';
+                    $nom = '';
+                    if (is_array($user)) {
+                        $prenom = is_string($user['prenom'] ?? null) ? $user['prenom'] : '';
+                        $nom = is_string($user['nom'] ?? null) ? $user['nom'] : '';
+                        echo ' ' . $nom . ' ' . $prenom;
+                    }
+                ?></span>
                 <a href="/admin">Utilisateurs</a>
                 <a href="/admin/agences">Agences</a>
                 <a href="/admin/trajets">Trajets</a>
                 <a href="/logout">Se déconnecter</a>
             <?php } else { ?>
-                <span>Bienvenue <?php echo " ".$_SESSION['user']['nom']." ".$_SESSION['user']['prenom']; ?></span>
+                <span>Bienvenue <?php
+                    $user = $_SESSION['user'] ?? null;
+                    $prenom = '';
+                    $nom = '';
+                    if (is_array($user)) {
+                        $prenom = is_string($user['prenom'] ?? null) ? $user['prenom'] : '';
+                        $nom = is_string($user['nom'] ?? null) ? $user['nom'] : '';
+                        echo ' ' . $nom . ' ' . $prenom;
+                    }
+                ?></span>
                 <a href="/creer">Créer un trajet</a>
                 <a href="/logout">Se déconnecter</a>
             <?php } ?>
