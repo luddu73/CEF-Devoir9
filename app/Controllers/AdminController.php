@@ -144,14 +144,18 @@ class AdminController extends Auth
                 $agenceModel = new Agence();
                 if ($agenceModel->add($ville)) {
                     $_SESSION['flashMsg'] = "Agence ajoutée avec succès.";
+                    $_SESSION['flashMsgColor'] = "success";
                 } else {
                     $_SESSION['flashMsg'] = "Erreur lors de l'ajout de l'agence : " . $agenceModel->getLastError();
+                    $_SESSION['flashMsgColor'] = "danger";
                 }
             } else {
                 $_SESSION['flashMsg'] = "Veuillez remplir le champ ville.";
+                $_SESSION['flashMsgColor'] = "warning";
             }
         } else {
             $_SESSION['flashMsg'] = "Méthode de requête non autorisée.";
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/agences");
         exit;
@@ -168,14 +172,18 @@ class AdminController extends Auth
                 $id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int) $_POST['id'] : 0;
                 if ($agenceModel->updateById($id, $ville)) {
                     $_SESSION['flashMsg'] = "Agence modifiée avec succès.";
+                    $_SESSION['flashMsgColor'] = "success";
                 } else {
                     $_SESSION['flashMsg'] = "Erreur lors de la modification de l'agence : " . $agenceModel->getLastError();
+                    $_SESSION['flashMsgColor'] = "danger";
                 }
             } else {
                 $_SESSION['flashMsg'] = "Veuillez remplir le champ ville.";
+                $_SESSION['flashMsgColor'] = "warning";
             }
         } else {
             $_SESSION['flashMsg'] = "Méthode de requête non autorisée.";
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/agences");
         exit;
@@ -187,6 +195,7 @@ class AdminController extends Auth
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID d'agence invalide.";
+            $_SESSION['flashMsgColor'] = "danger";
             header("Location: /admin/agences");
             exit;
         }
@@ -196,8 +205,10 @@ class AdminController extends Auth
         $agenceModel = new Agence();
         if ($agenceModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Agence supprimée avec succès.";
+            $_SESSION['flashMsgColor'] = "success";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression de l'agence : " . $agenceModel->getLastError();
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/agences");
         exit;
@@ -233,6 +244,7 @@ class AdminController extends Auth
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID de trajet invalide.";
+            $_SESSION['flashMsgColor'] = "danger";
             header("Location: /admin/trajets");
             exit;
         }
@@ -242,8 +254,10 @@ class AdminController extends Auth
         $trajetModel = new Trajet();
         if ($trajetModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Trajet supprimé avec succès.";
+            $_SESSION['flashMsgColor'] = "success";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression du trajet : " . $trajetModel->getLastError();
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/trajets");
         exit;

@@ -54,11 +54,15 @@
     <main class="container m-auto my-3 flex-fill">
         <?php 
         $flashMsg = $_SESSION['flashMsg'] ?? null;
+        $flashMsgColor = $_SESSION['flashMsgColor'] ?? null;
         if (is_string($flashMsg)) 
-        { ?>
-            <div class="alert alert-warning col-9 m-auto my-2" role="alert">
-                <?php echo (string)$flashMsg; ?>
+        { 
+            $flashMsgColorStr = is_string($flashMsgColor) ? $flashMsgColor : 'info';
+            ?>
+            <div class="alert alert-<?= htmlspecialchars($flashMsgColorStr) ?> col-9 m-auto my-2" role="alert">
+                <?php echo htmlspecialchars((string)$flashMsg); ?>
             </div>
         <?php 
         unset($_SESSION['flashMsg']);
+        unset($_SESSION['flashMsgColor']);
         } ?>
