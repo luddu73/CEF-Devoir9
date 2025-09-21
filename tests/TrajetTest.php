@@ -103,13 +103,12 @@ final class TrajetTest extends TestCase
     public function testGetByIdReturnsTrajetWhenIdExists(): void
     {
         $sql = "
-        SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email,
-               t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places
-        FROM trajets t
-        JOIN users u ON t.auteur = u.id
-        JOIN agences a1 ON t.agence_depart = a1.id
-        JOIN agences a2 ON t.agence_destination = a2.id
-        WHERE t.id = ?";
+        SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart_ville, a2.ville AS agence_destination_ville, t.places, t.agence_depart, t.agence_destination
+                FROM trajets t 
+                JOIN users u ON t.auteur = u.id 
+                JOIN agences a1 ON t.agence_depart = a1.id 
+                JOIN agences a2 ON t.agence_destination = a2.id
+                WHERE t.id = ?";
 
         $row = [
             'id' => 1,
@@ -120,8 +119,11 @@ final class TrajetTest extends TestCase
             'auteur_email' => 'jean.dupont@example.com',
             'date_depart' => '2024-07-01 10:00:00',
             'date_destination' => '2024-07-01 12:00:00',
+            'agence_depart_ville' => 'Paris',
+            'agence_destination_ville' => 'Lyon',
             'agence_depart' => '1',
             'agence_destination' => '2',
+
             'places' => 3
         ];
 
@@ -154,6 +156,9 @@ final class TrajetTest extends TestCase
         $this->assertSame(1, $result['agence_depart']);
         $this->assertSame(2, $result['agence_destination']);
 
+        $this->assertSame('Paris', $result['agence_depart_ville']);
+        $this->assertSame('Lyon', $result['agence_destination_ville']);
+
         $this->assertSame(3, $result['places']);
     }
     /**
@@ -164,13 +169,12 @@ final class TrajetTest extends TestCase
     public function testGetByIdReturnsNullWhenIdDoesNotExist(): void
     {
         $sql = "
-        SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email,
-               t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places
-        FROM trajets t
-        JOIN users u ON t.auteur = u.id
-        JOIN agences a1 ON t.agence_depart = a1.id
-        JOIN agences a2 ON t.agence_destination = a2.id
-        WHERE t.id = ?";
+        SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart_ville, a2.ville AS agence_destination_ville, t.places, t.agence_depart, t.agence_destination
+                FROM trajets t 
+                JOIN users u ON t.auteur = u.id 
+                JOIN agences a1 ON t.agence_depart = a1.id 
+                JOIN agences a2 ON t.agence_destination = a2.id
+                WHERE t.id = ?";
 
         ['pdo' => $pdo] = PdoMock::build(
             $this,
@@ -191,7 +195,7 @@ final class TrajetTest extends TestCase
      */
     public function testGetByIdReturnsNullWhenRowIsIncomplete(): void
     {
-        $sql = "SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places 
+        $sql = "SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart_ville, a2.ville AS agence_destination_ville, t.places, t.agence_depart, t.agence_destination
                 FROM trajets t 
                 JOIN users u ON t.auteur = u.id 
                 JOIN agences a1 ON t.agence_depart = a1.id 
