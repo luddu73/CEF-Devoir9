@@ -1,4 +1,13 @@
 <?php
+/**
+ * Modèle pour la gestion des utilisateurs.
+ *
+ * Fournit des méthodes pour interagir avec la table `users`
+ * dans la base de données.
+ *
+ * @category User
+ * @package  TouchePasAuKlaxon
+ */
 namespace Touchepasauklaxon\Models;
 
 use Touchepasauklaxon\Database;
@@ -7,11 +16,19 @@ use PDO;
 class User {
     private PDO $db;
 
+    /**
+     * Constructeur de la classe User.
+     *
+     * @param PDO|null $db Instance PDO pour la connexion à la base de données.
+     *                     Si null, une nouvelle connexion sera créée.
+     */
     public function __construct(?PDO $db = null) {
         $this->db = $db ?? Database::getConnection();
     }
 
     /**
+     * Récupère tous les utilisateurs.
+     * 
      * @return array<int, array{
      *   id:int,
      *   nom:string,
@@ -30,6 +47,8 @@ class User {
     }
 
     /**
+     * Récupère un utilisateur par son email.
+     * 
      * @return array{
      *   id:int,
      *   nom:string,

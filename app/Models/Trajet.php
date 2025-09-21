@@ -1,4 +1,14 @@
 <?php
+/**
+ * Modèle pour la gestion des trajets.
+ *
+ * Fournit des méthodes pour interagir avec la table `trajets`
+ * dans la base de données.
+ *
+ * @category Trajet
+ * @package  TouchePasAuKlaxon
+ */
+
 namespace Touchepasauklaxon\Models;
 
 use Touchepasauklaxon\Database;
@@ -11,11 +21,19 @@ class Trajet {
 
     private ?string $lastError = null;
 
+    /**
+     * Constructeur de la classe Trajet.
+     *
+     * @param PDO|null $db Instance PDO pour la connexion à la base de données.
+     *                     Si null, une nouvelle connexion sera créée.
+     */
     public function __construct(?PDO $db = null) {
         $this->db = $db ?? Database::getConnection();
     }
 
      /** 
+      * Récupère tous les trajets.
+      *
       * @return array<int, array{
       *   id:int,
       *   auteur:int,
@@ -54,6 +72,8 @@ class Trajet {
     }
 
     /** 
+     * Récupère les trajets à afficher sur la page d'accueil (futurs avec places dispo).
+     *
       * @return array<int, array{
       *   id:int,
       *   auteur:int,
@@ -92,6 +112,10 @@ class Trajet {
     }
     
     /** 
+     * Récupère un trajet par son ID.
+     * 
+     * @param int $id ID du trajet à récupérer.
+     * 
      * @return array{
      *   id:int,
      *   auteur:int,
@@ -153,6 +177,13 @@ class Trajet {
         }
     }
 
+    /** 
+     * Supprime un trajet par son ID.
+     * 
+     * @param int $id ID du trajet à supprimer.
+     * 
+     * @return bool Vrai si la suppression a réussi, faux sinon.
+     */
     public function deleteById(int $id): bool {
         try {
             $stmt = $this->db->prepare("DELETE FROM trajets WHERE id = ?");
@@ -170,6 +201,20 @@ class Trajet {
 
     }
 
+    /** 
+     * Met à jour un trajet par son ID.
+     * 
+     * @param int $id ID du trajet à mettre à jour.
+     * @param int $userId ID de l'utilisateur auteur du trajet.
+     * @param DateTime $date_depart Nouvelle date et heure de départ.
+     * @param DateTime $date_destination Nouvelle date et heure de destination.
+     * @param int $places Nombre total de places.
+     * @param int $places_disponibles Nombre de places disponibles.
+     * @param int $agenceDepartId ID de l'agence de départ.
+     * @param int $agenceDestinationId ID de l'agence de destination.
+     * 
+     * @return bool Vrai si la mise à jour a réussi, faux sinon.
+     */
     public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $places_disponibles, int $agenceDepartId, int $agenceDestinationId): bool {
         try {
             $stmt = $this->db->prepare("UPDATE trajets SET auteur = ?, date_depart = ?, date_destination = ?, places = ?, places_disponibles = ?, agence_depart = ?, agence_destination = ? WHERE id = ?");
@@ -194,6 +239,8 @@ class Trajet {
     }
 
     /** 
+     * Crée un nouveau trajet.
+     * 
      * @param int $userId
      * @param DateTime $date_depart
      * @param DateTime $date_destination
@@ -229,6 +276,11 @@ class Trajet {
         }
     }
 
+    /**
+     * Retourne le dernier message d'erreur.
+     * 
+     * @return string|null Message d'erreur ou null s'il n'y a pas d'erreur.
+     */
     public function getLastError(): ?string {
         return $this->lastError ?? null;
     }

@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * Contrôleur pour la gestion des pages principales de l'application.
+ * 
+ * Gère l'affichage de la page d'accueil, des formulaires de création et
+ * de modification de trajets, ainsi que les actions associées.
+ * 
+ * @category HomeController
+ * @package  TouchePasAuKlaxon
+ */
 namespace Touchepasauklaxon\Controllers;
 
 use Touchepasauklaxon\Auth;
@@ -9,6 +17,11 @@ use Touchepasauklaxon\Models\Agence;
 
 class HomeController
 {
+    /**
+     * Prépare l'environnement pour les actions nécessitant une authentification.
+     *
+     * @return bool Vrai si l'utilisateur est connecté, sinon faux.
+     */
     private function prepare(): bool
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -17,6 +30,11 @@ class HomeController
         return Auth::isLogged();
     }
 
+    /**
+     * Affiche la page d'accueil avec la liste des trajets.
+     * 
+     * @return void
+     */
     public function index(): void
     {
         $isLogged = $this->prepare();
@@ -30,6 +48,10 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche la page de connexion.
+     *
+     * @return void
+     */
     public function login(): void
     {
         $isLogged = $this->prepare();
@@ -43,6 +65,10 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche le formulaire de création d'un trajet.
+     *
+     * @return void
+     */
     public function createTrajetForm(): void
     {
         $isLogged = $this->prepare();
@@ -58,6 +84,12 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche le formulaire de modification d'un trajet.
+     *
+     * @param int $id ID du trajet à modifier.
+     * 
+     * @return void
+     */
     public function editTrajetForm(int $id): void
     {
         $isLogged = $this->prepare();
@@ -92,6 +124,8 @@ class HomeController
     }
 
     /**
+     * Contrôle les données du formulaire de création ou modification de trajet.
+     * 
      * @return array<int, string>
      */
     private function controleTrajet(): array
@@ -167,6 +201,10 @@ class HomeController
         return $errors;
     }
 
+    /** Gère la création d'un nouveau trajet.
+     *
+     * @return void
+     */
     public function createTrajet(): void
     {
         $isLogged = $this->prepare();
@@ -230,6 +268,12 @@ class HomeController
         }
     }
 
+    /** Gère la mise à jour d'un trajet existant.
+     *
+     * @param int $id ID du trajet à modifier.
+     * 
+     * @return void
+     */
     public function updateTrajet(int $id): void
     {
         $isLogged = $this->prepare();
@@ -311,6 +355,10 @@ class HomeController
         }
     }
 
+    /** Gère la suppression d'un trajet.
+     *
+     * @return void
+     */
     public function deleteTrajet(): void
     {
         $isLogged = $this->prepare();
@@ -355,6 +403,8 @@ class HomeController
         exit;
     }
     /**
+     * Envoie une réponse JSON avec le code de statut HTTP spécifié.
+     * 
      * @param array<string, mixed> $data
      */
     private function json(array $data, int $status = 200): void 
@@ -365,6 +415,12 @@ class HomeController
         exit;
     }
 
+    /** Fournit les détails d'un trajet en JSON pour la modale.
+     *
+     * @param int $id ID du trajet à afficher.
+     * 
+     * @return void
+     */
     public function viewTrajet(int $id): void
     {
         header('Content-Type: application/json; charset=utf-8');

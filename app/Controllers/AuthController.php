@@ -1,10 +1,22 @@
 <?php 
+/**
+ * Contrôleur pour la gestion de l'authentification des utilisateurs.
+ *
+ * Gère les actions de connexion et de déconnexion.
+ *
+ * @category AuthController
+ * @package  TouchePasAuKlaxon
+ */
 namespace Touchepasauklaxon\Controllers;
 use Touchepasauklaxon\Models\User;
 use Touchepasauklaxon\Auth;
 
 class AuthController 
 {
+    /** Gère la connexion des utilisateurs.
+     *
+     * @return void
+     */
     public function login(): void 
     {
         session_start();
@@ -67,7 +79,10 @@ class AuthController
         }
     }
 
-
+    /** Gère la déconnexion des utilisateurs.
+     *
+     * @return void
+     */
     public function logout(): void
     {
         session_start();
