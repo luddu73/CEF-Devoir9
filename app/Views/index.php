@@ -9,12 +9,16 @@ if (!$isLogged)
 {
     echo '<h1>Pour obtenir plus d\'informations sur un trajet, veuillez vous connecter.</h1>';
 }
+elseif ($isAdmin) 
+{
+    echo '<h1>Gestion des trajets</h1>';
+}
 else
 {
     echo '<h1>Trajets proposés</h1>';
 }
 ?>
-<table class="table w-100 m-3 text-center table-striped" border='1'>
+<table class="table w-100 m-3 text-center table-striped">
     <tr class="table-info">
         <th>Départ</th>
         <th>Date</th>
@@ -54,6 +58,12 @@ else
                     echo "<button type='button' class='btn btn-icon' value='Modifier'><img src='/img/pen.svg' alt='' class='icon'></button>";
                     echo "</a>";
                     echo "<form method='POST' action='/delete' style='display:inline;'>";
+                    echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
+                    echo "<button type='submit' class='btn btn-icon' value='Supprimer'><img src='/img/trash.svg' alt='' class='icon'></button>";
+                    echo "</form>";
+                }
+                if ($isAdmin && $trajet['auteur'] !== $userId) {
+                    echo "<form method='POST' action='/admin/trajets/delete' style='display:inline;'>";
                     echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
                     echo "<button type='submit' class='btn btn-icon' value='Supprimer'><img src='/img/trash.svg' alt='' class='icon'></button>";
                     echo "</form>";

@@ -57,7 +57,7 @@
         if (is_string($flashMsg)) 
         { ?>
             <div class="alert alert-warning col-9 m-auto my-2" role="alert">
-                <?php echo htmlspecialchars((string)$flashMsg); ?>
+                <?php echo (string)$flashMsg; ?>
             </div>
         <?php 
         unset($_SESSION['flashMsg']);

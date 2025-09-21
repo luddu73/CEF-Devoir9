@@ -169,7 +169,11 @@ class HomeController
         $errors = $this->controleTrajet();
 
         if(!empty($errors)) {
-            $_SESSION['form_errors'] = $errors;
+            $_SESSION['flashMsg'] = '<ul class="mb-0">';
+            foreach ($errors as $msg) {
+                $_SESSION['flashMsg'] .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+            }
+            $_SESSION['flashMsg'] .= '</ul>';
             $_SESSION['input'] = $_POST;
             header('Location: /creer');
             exit;

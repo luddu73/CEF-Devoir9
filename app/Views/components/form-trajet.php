@@ -97,18 +97,11 @@ $userPrenom = is_array($user) && is_string($user['prenom'] ?? null) ? $user['pre
 $userEmail  = is_array($user) && is_string($user['email']  ?? null) ? $user['email']  : '';
 $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel']    : '';
 
-/** Version éventuelle (optimistic locking, etc.) */
-$versionVal = isset($version) && (is_int($version) || (is_string($version) && ctype_digit($version)))
-    ? (string)$version
-    : null;
 ?>
 <form method="post" action="<?= h($action) ?>">
     <?php if ($mode === 'edit'): ?>
         <input type="hidden" name="_method" value="PATCH">
         <input type="hidden" name="id" value="<?= $trajetId ?>">
-        <?php if ($versionVal !== null): ?>
-            <input type="hidden" name="version" value="<?= $versionVal ?>">
-        <?php endif; ?>
     <?php endif; ?>
     <!-- Champs utilisateur (non modifiables ici) -->
     <h2>Informations utilisateur</h2>
@@ -135,25 +128,21 @@ $versionVal = isset($version) && (is_int($version) || (is_string($version) && ct
         <div class="col-5">
             <div class="mb-3">
                 <label for="date_depart" class="form-label">Date de départ</label>
-                <input type="date" name="date_depart" class="form-control" id="inputDateDepart" aria-describedby="dateDepartHelp" value="<?= old('date_depart', $trajet) ?>">
-                <div id="dateDepartHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+                <input type="date" name="date_depart" class="form-control" id="inputDateDepart" value="<?= old('date_depart', $trajet) ?>">
             </div>
             <div class="mb-3">
                 <label for="heure_depart" class="form-label">Heure de départ</label>
-                <input type="time" name="heure_depart" class="form-control" id="inputHeureDepart" aria-describedby="heureDepartHelp" value="<?= old('heure_depart', $trajet) ?>">
-                <div id="heureDepartHelp" class="form-text">We'll never share your email with anyone else.</div>
+                <input type="time" name="heure_depart" class="form-control" id="inputHeureDepart" value="<?= old('heure_depart', $trajet) ?>">
             </div>
         </div>
         <div class="col-5">
             <div class="mb-3">
                 <label for="date_destination" class="form-label">Date de destination</label>
-                <input type="date" name="date_destination" class="form-control" id="inputDateDestination" aria-describedby="dateDestinationHelp" value="<?= old('date_destination', $trajet) ?>">
-                <div id="dateDestinationHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+                <input type="date" name="date_destination" class="form-control" id="inputDateDestination" value="<?= old('date_destination', $trajet) ?>">
             </div>
             <div class="mb-3">
                 <label for="heure_destination" class="form-label">Heure de destination</label>
-                <input type="time" name="heure_destination" class="form-control" id="inputHeureDestination" aria-describedby="heureDestinationHelp" value="<?= old('heure_destination', $trajet) ?>">
-                <div id="heureDestinationHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+                <input type="time" name="heure_destination" class="form-control" id="inputHeureDestination" value="<?= old('heure_destination', $trajet) ?>">
             </div>
         </div>
         <div class="col-5">
@@ -197,8 +186,7 @@ $versionVal = isset($version) && (is_int($version) || (is_string($version) && ct
     </div>
     <div class="mb-3">
         <label for="places" class="form-label">Nombre de places</label>
-        <input type="number" name="places" class="form-control" id="inputPlaces" aria-describedby="placesHelp" value="<?= old('places', $trajet) ?>">
-        <div id="placesHelp" class="form-text hidden">We'll never share your email with anyone else.</div>
+        <input type="number" name="places" class="form-control" id="inputPlaces" value="<?= old('places', $trajet) ?>">
     </div>
     <div class="text-center">
         <button type="submit" class="btn btn-primary">
