@@ -49,9 +49,7 @@ else
             echo "<td>" . (int)($trajet['places']) . "</td>";
             if ($isLogged) {
                 echo "<td>";
-                echo "<a href='/detail/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                echo "<button type='button' class='btn btn-icon' value='Details'><img src='/img/eye.svg' alt='' class='icon'></button>";
-                echo "</a>";
+                echo "<button type='button' class='btn btn-icon btn-detail' data-id='".(int)$trajet['id']."' aria-label='Détails' title='Détails'><img src='/img/eye.svg' alt='' class='icon'></button>";
                 $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
                 if($trajet['auteur'] === $userId) {
                     echo "<a href='/modifier/" . (int)($trajet['id']) . "' style='display:inline;'>";

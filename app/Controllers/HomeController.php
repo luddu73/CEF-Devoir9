@@ -26,6 +26,7 @@ class HomeController
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
         require_once dirname(__DIR__, 2) . '/app/Views/index.php';
+        require_once dirname(__DIR__, 2) . '/app/Views/components/modale.php';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
@@ -339,11 +340,12 @@ class HomeController
 
     public function viewTrajet(int $id): void
     {
+        header('Content-Type: application/json; charset=utf-8');
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
-       if(!$isLogged) {
-            header('Location: /login');
-            exit;
+        if(!$isLogged) {
+            $this->json(['error' => 'Non autorisé'], 401);
+            return;
         }
 
         $trajetModel = new Trajet();
