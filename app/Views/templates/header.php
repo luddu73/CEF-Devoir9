@@ -60,7 +60,7 @@
             $flashMsgColorStr = is_string($flashMsgColor) ? $flashMsgColor : 'info';
             ?>
             <div class="alert alert-<?= htmlspecialchars($flashMsgColorStr) ?> col-9 m-auto my-2" role="alert">
-                <?php echo htmlspecialchars((string)$flashMsg); ?>
+                <?php echo (string)$flashMsg; ?>
             </div>
         <?php 
         unset($_SESSION['flashMsg']);
