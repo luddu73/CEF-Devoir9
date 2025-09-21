@@ -234,6 +234,7 @@ class AdminController extends Auth
         $trajets = $trajetModel->getAll();
 
         require_once dirname(__DIR__, 2) . '/app/Views/index.php';
+        require_once dirname(__DIR__, 2) . '/app/Views/components/modale.php';
 
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }

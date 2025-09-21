@@ -25,17 +25,57 @@ class Trajet {
       *   date_destination:string,
       *   agence_depart:string,
       *   agence_destination:string,
-      *   places:int
+      *   places:int,
+      *   places_disponibles:int
       * }>|false $trajets
       */
     public function getAll() {
         try{
             $stmt = $this->db->prepare("
-                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places 
+                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places, t.places_disponibles 
                 FROM trajets t 
                 JOIN users u ON t.auteur = u.id 
                 JOIN agences a1 ON t.agence_depart = a1.id 
-                JOIN agences a2 ON t.agence_destination = a2.id");
+                JOIN agences a2 ON t.agence_destination = a2.id
+                ORDER BY t.date_depart ASC");
+            $stmt->execute();
+            $rows = $stmt->fetchAll();
+            foreach ($rows as &$r) {
+                if (!empty($r['date_depart']))       { $r['date_depart']       = new DateTime($r['date_depart']); }
+                if (!empty($r['date_destination']))  { $r['date_destination']  = new DateTime($r['date_destination']); }
+            }
+            return $rows;
+
+        } catch (PDOException $e) {
+            error_log("Erreur lors de la récupération des trajets : " . $e->getMessage());
+            $this->lastError = "Une erreur technique est survenue lors de la récupération des trajets. Veuillez réessayer plus tard.";
+            return [];
+        }
+    }
+
+    /** 
+      * @return array<int, array{
+      *   id:int,
+      *   auteur:int,
+      *   auteur_nom:string,
+      *   auteur_prenom:string,
+      *   date_depart:string,
+      *   date_destination:string,
+      *   agence_depart:string,
+      *   agence_destination:string,
+      *   places:int,
+      *   places_disponibles:int
+      * }>|false $trajets
+      */
+    public function getAccueil() {
+        try{
+            $stmt = $this->db->prepare("
+                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places, t.places_disponibles 
+                FROM trajets t 
+                JOIN users u ON t.auteur = u.id 
+                JOIN agences a1 ON t.agence_depart = a1.id 
+                JOIN agences a2 ON t.agence_destination = a2.id
+                WHERE t.date_depart >= NOW() AND t.places_disponibles > 0 ORDER BY t.date_depart ASC");
             $stmt->execute();
             $rows = $stmt->fetchAll();
             foreach ($rows as &$r) {
@@ -64,6 +104,7 @@ class Trajet {
      *   auteur_tel:string,
      *   auteur_email:string,
      *   places:int,
+     *   places_disponibles:int,
      *   agence_depart_ville:string,
      *   agence_destination_ville:string,
      * }|null
@@ -71,7 +112,7 @@ class Trajet {
     public function getById(int $id) {
         try {
             $stmt = $this->db->prepare("
-                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart_ville, a2.ville AS agence_destination_ville, t.places, t.agence_depart, t.agence_destination
+                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart_ville, a2.ville AS agence_destination_ville, t.places, t.places_disponibles, t.agence_depart, t.agence_destination
                 FROM trajets t 
                 JOIN users u ON t.auteur = u.id 
                 JOIN agences a1 ON t.agence_depart = a1.id 
@@ -80,10 +121,10 @@ class Trajet {
 
             $stmt->execute([$id]);
             $result = $stmt->fetch(PDO::FETCH_ASSOC);
-            if (!is_array($result) || !isset($result['id']) || !isset($result['auteur']) || !isset($result['date_depart']) || !isset($result['date_destination']) || !isset($result['agence_depart']) || !isset($result['agence_destination']) || !isset($result['auteur_nom']) || !isset($result['auteur_prenom']) || !isset($result['auteur_tel']) || !isset($result['auteur_email']) || !isset($result['places'])) {
+            if (!is_array($result) || !isset($result['id']) || !isset($result['auteur']) || !isset($result['date_depart']) || !isset($result['date_destination']) || !isset($result['agence_depart']) || !isset($result['agence_destination']) || !isset($result['auteur_nom']) || !isset($result['auteur_prenom']) || !isset($result['auteur_tel']) || !isset($result['auteur_email']) || !isset($result['places']) || !isset($result['places_disponibles'])) {
                 return null;
             }
-            if (!is_numeric($result['id']) || !is_numeric($result['places'])) {
+            if (!is_numeric($result['id']) || !is_numeric($result['places']) || !is_numeric($result['places_disponibles'])) {
                 return null;
             }
             return [
@@ -99,7 +140,8 @@ class Trajet {
                 'auteur_prenom' => (string)$result['auteur_prenom'],
                 'auteur_tel' => (string)$result['auteur_tel'],
                 'auteur_email' => (string)$result['auteur_email'],
-                'places' => (int)$result['places']
+                'places' => (int)$result['places'],
+                'places_disponibles' => (int)$result['places_disponibles']
             ];
 
 
@@ -128,10 +170,10 @@ class Trajet {
 
     }
 
-    public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $agenceDepartId, int $agenceDestinationId): bool {
+    public function updateById(int $id, int $userId, DateTime $date_depart, DateTime $date_destination, int $places, int $places_disponibles, int $agenceDepartId, int $agenceDestinationId): bool {
         try {
-            $stmt = $this->db->prepare("UPDATE trajets SET auteur = ?, date_depart = ?, date_destination = ?, places = ?, agence_depart = ?, agence_destination = ? WHERE id = ?");
-         $ok = $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $agenceDepartId, $agenceDestinationId, $id]);
+            $stmt = $this->db->prepare("UPDATE trajets SET auteur = ?, date_depart = ?, date_destination = ?, places = ?, places_disponibles = ?, agence_depart = ?, agence_destination = ? WHERE id = ?");
+         $ok = $stmt->execute([$userId, $date_depart->format('Y-m-d H:i:s'), $date_destination->format('Y-m-d H:i:s'), $places, $places_disponibles, $agenceDepartId, $agenceDestinationId, $id]);
          if(!$ok) {
             $this->lastError = "Échec de la mise à jour du trajet.";
              return false;

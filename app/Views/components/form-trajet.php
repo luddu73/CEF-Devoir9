@@ -190,6 +190,11 @@ $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel
         <label for="inputPlaces" class="form-label">Nombre de places</label>
         <input type="number" name="places" class="form-control" id="inputPlaces" value="<?= old('places', $trajet) ?>" min="1" required>
     </div>
+    <?= $mode === 'edit' ? '
+    <div class="mb-3">
+        <label for="inputPlacesDisponibles" class="form-label">Nombre de places disponibles</label>
+        <input type="number" name="places_disponibles" class="form-control" id="inputPlacesDisponibles" value="' . old('places_disponibles', $trajet) . '" min="0" required>
+    </div>' : '' ?>
     <div class="text-center">
         <button type="submit" class="btn btn-primary">
             <?= $mode === 'edit' ? 'Mettre à jour le trajet' : 'Créer le trajet' ?>
