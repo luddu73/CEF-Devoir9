@@ -1,5 +1,13 @@
 <?php
-
+/**
+ * Contrôleur pour la gestion des pages principales de l'application.
+ * 
+ * Gère l'affichage de la page d'accueil, des formulaires de création et
+ * de modification de trajets, ainsi que les actions associées.
+ * 
+ * @category HomeController
+ * @package  TouchePasAuKlaxon
+ */
 namespace Touchepasauklaxon\Controllers;
 
 use Touchepasauklaxon\Auth;
@@ -9,6 +17,11 @@ use Touchepasauklaxon\Models\Agence;
 
 class HomeController
 {
+    /**
+     * Prépare l'environnement pour les actions nécessitant une authentification.
+     *
+     * @return bool Vrai si l'utilisateur est connecté, sinon faux.
+     */
     private function prepare(): bool
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -17,6 +30,11 @@ class HomeController
         return Auth::isLogged();
     }
 
+    /**
+     * Affiche la page d'accueil avec la liste des trajets.
+     * 
+     * @return void
+     */
     public function index(): void
     {
         $isLogged = $this->prepare();
@@ -24,12 +42,16 @@ class HomeController
         $title = 'Accueil - Touche pas au Klaxon';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         $trajetModel = new Trajet();
-        $trajets = $trajetModel->getAll();
+        $trajets = $trajetModel->getAccueil();
         require_once dirname(__DIR__, 2) . '/app/Views/index.php';
         require_once dirname(__DIR__, 2) . '/app/Views/components/modale.php';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche la page de connexion.
+     *
+     * @return void
+     */
     public function login(): void
     {
         $isLogged = $this->prepare();
@@ -43,6 +65,10 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche le formulaire de création d'un trajet.
+     *
+     * @return void
+     */
     public function createTrajetForm(): void
     {
         $isLogged = $this->prepare();
@@ -58,6 +84,12 @@ class HomeController
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche le formulaire de modification d'un trajet.
+     *
+     * @param int $id ID du trajet à modifier.
+     * 
+     * @return void
+     */
     public function editTrajetForm(int $id): void
     {
         $isLogged = $this->prepare();
@@ -92,6 +124,8 @@ class HomeController
     }
 
     /**
+     * Contrôle les données du formulaire de création ou modification de trajet.
+     * 
      * @return array<int, string>
      */
     private function controleTrajet(): array
@@ -115,6 +149,8 @@ class HomeController
             $heureDestination = '';
         }
         $places = $_POST['places'] ?? '';
+        $places_disponibles = $_POST['places_disponibles'] ?? '';
+        $mode = $_POST['_method'] ?? '';
 
         $now = new \DateTime(); // Date et heure actuelles
         $dateDepartTime = \DateTime::createFromFormat('Y-m-d H:i', "$dateDepart $heureDepart");
@@ -158,9 +194,17 @@ class HomeController
             $errors[] = "Le nombre de places doit être supérieur à zéro.";
         }
 
+        if($places_disponibles < 0 AND $mode == 'PATCH') {
+            $errors[] = "Le nombre de places disponibles ne peut pas être négatif.";
+        }
+
         return $errors;
     }
 
+    /** Gère la création d'un nouveau trajet.
+     *
+     * @return void
+     */
     public function createTrajet(): void
     {
         $isLogged = $this->prepare();
@@ -213,7 +257,7 @@ class HomeController
                 $_SESSION['flashMsg'] = "Trajet crée avec succès.";
                 $_SESSION['flashMsgColor'] = "success";
                 $_SESSION['input'] = $_POST;
-                header('Location: /creer');
+                header('Location: /');
             } else {
                 $_SESSION['flashMsg'] = "Erreur lors de la création du trajet : " . $trajetModel->getLastError();
                 $_SESSION['flashMsgColor'] = "danger";
@@ -224,6 +268,12 @@ class HomeController
         }
     }
 
+    /** Gère la mise à jour d'un trajet existant.
+     *
+     * @param int $id ID du trajet à modifier.
+     * 
+     * @return void
+     */
     public function updateTrajet(int $id): void
     {
         $isLogged = $this->prepare();
@@ -266,6 +316,7 @@ class HomeController
             $villeDepart = $_POST['agence_depart'] ?? '';
             $villeArrivee = $_POST['agence_destination'] ?? '';
             $places = $_POST['places'] ?? '';
+            $places_disponibles = $_POST['places_disponibles'] ?? '';
             $dateDepart = $_POST['date_depart'] ?? '';
             if (!is_string($dateDepart)) {
                 $dateDepart = '';
@@ -286,13 +337,14 @@ class HomeController
             $dateDestination = new \DateTime($dateDestination . ' ' . $heureDestination);
             $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id']) && is_numeric($_SESSION['user']['id'])) ? (int)$_SESSION['user']['id'] : 0;
             $places = (is_numeric($places)) ? (int)$places : 0;
+            $places_disponibles = (is_numeric($places_disponibles)) ? (int)$places_disponibles : 0;
             $villeDepart = (is_numeric($villeDepart)) ? (int)$villeDepart : 0;
             $villeArrivee = (is_numeric($villeArrivee)) ? (int)$villeArrivee : 0;
-            if($trajetModel->updateById($id, $userId, $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
+            if($trajetModel->updateById($id, $userId, $dateDepart, $dateDestination, $places, $places_disponibles, $villeDepart, $villeArrivee)) {
                 $_SESSION['flashMsg'] = "Trajet modifié avec succès.";
                 $_SESSION['flashMsgColor'] = "success";
                 $_SESSION['input'] = $_POST;
-                header('Location: /modifier/' . $id);
+                header('Location: /');
             } else {
                 $_SESSION['flashMsg'] = "Erreur lors de la modification du trajet : " . $trajetModel->getLastError();
                 $_SESSION['flashMsgColor'] = "danger";
@@ -303,6 +355,10 @@ class HomeController
         }
     }
 
+    /** Gère la suppression d'un trajet.
+     *
+     * @return void
+     */
     public function deleteTrajet(): void
     {
         $isLogged = $this->prepare();
@@ -347,6 +403,8 @@ class HomeController
         exit;
     }
     /**
+     * Envoie une réponse JSON avec le code de statut HTTP spécifié.
+     * 
      * @param array<string, mixed> $data
      */
     private function json(array $data, int $status = 200): void 
@@ -357,6 +415,12 @@ class HomeController
         exit;
     }
 
+    /** Fournit les détails d'un trajet en JSON pour la modale.
+     *
+     * @param int $id ID du trajet à afficher.
+     * 
+     * @return void
+     */
     public function viewTrajet(int $id): void
     {
         header('Content-Type: application/json; charset=utf-8');

@@ -1,4 +1,11 @@
 <?php 
+/**
+ * Classe de gestion des actions administratives.
+ *
+ * @category AdminController
+ * @package  TouchePasAuKlaxon
+ */
+
 namespace Touchepasauklaxon\Controllers;
 use Touchepasauklaxon\Auth;
 use Touchepasauklaxon\Models\User;
@@ -8,6 +15,12 @@ use Touchepasauklaxon\Models\Trajet;
 class AdminController extends Auth
 {
 
+    /**
+     * Prépare l'environnement pour les actions administratives.
+     * Vérifie que l'utilisateur est connecté et a les droits d'administrateur.
+     *
+     * @return void
+     */
     private function prepare(): void
     {
         if (session_status() === PHP_SESSION_NONE) {
@@ -16,6 +29,11 @@ class AdminController extends Auth
         Auth::requireAdmin();
     }
 
+    /**
+     * Affiche la liste des utilisateurs.
+     *
+     * @return void
+     */
     public function index(): void
     {
         $this->prepare();
@@ -55,6 +73,10 @@ class AdminController extends Auth
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Affiche et gère la section de gestion des agences.
+     *
+     * @return void
+     */
     public function agences(): void
     {
         $this->prepare();
@@ -134,6 +156,10 @@ class AdminController extends Auth
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Ajoute une nouvelle agence.
+     *
+     * @return void
+     */
     public function addAgence(): void
     {
         $this->prepare();
@@ -161,6 +187,10 @@ class AdminController extends Auth
         exit;
     }
 
+    /** Modifie une agence existante.
+     *
+     * @return void
+     */
     public function editAgence(): void
     {
         $this->prepare();
@@ -189,6 +219,10 @@ class AdminController extends Auth
         exit;
     }
 
+    /** Supprime une agence existante.
+     *
+     * @return void
+     */
     public function deleteAgence(): void
     {
         $this->prepare();
@@ -214,18 +248,16 @@ class AdminController extends Auth
         exit;
     }
 
+    /** Renvoi à l'index et permet d'afficher la liste de trajets comme étant administrateur pour gérer les trajets.
+     *
+     * @return void
+     */
     public function trajets(): void
     {
         $this->prepare();
         $isLogged = Auth::isLogged();
         $isAdmin  = Auth::isAdmin();
         $viewAdmin = true;
-/*
-        $flashMsg = $_SESSION['flashMsg'] ?? null;
-        if (is_string($flashMsg)) {
-            echo "<p><center>" . htmlspecialchars($flashMsg) . "</center></p>";
-            unset($_SESSION['flashMsg']);
-        }*/
 
         $title = 'Liste des trajets - Touche pas au Klaxon';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
@@ -234,10 +266,15 @@ class AdminController extends Auth
         $trajets = $trajetModel->getAll();
 
         require_once dirname(__DIR__, 2) . '/app/Views/index.php';
+        require_once dirname(__DIR__, 2) . '/app/Views/components/modale.php';
 
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
+    /** Supprime un trajet existant.
+     *
+     * @return void
+     */
     public function deleteTrajet(): void
     {
         $this->prepare();

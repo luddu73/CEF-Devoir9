@@ -55,6 +55,7 @@ CREATE TABLE IF NOT EXISTS `touchepasauklaxon`.`trajets` (
   `date_depart` DATETIME NOT NULL,
   `date_destination` DATETIME NOT NULL,
   `places` INT NOT NULL,
+  `places_disponibles` INT,
   `agence_depart` INT NOT NULL,
   `agence_destination` INT NOT NULL,
   PRIMARY KEY (`id`),
@@ -87,6 +88,13 @@ CHECK (`places` > 0);
 ALTER TABLE `touchepasauklaxon`.`trajets`
 ADD CONSTRAINT `chk_dates_valides`
 CHECK (`date_destination` > `date_depart`);
+
+-- Contrainte pour l'insertion d'un trajet fin que le nombre de place dispo soit égal aux places totales
+CREATE TRIGGER `before_insert_trajets`
+BEFORE INSERT ON `touchepasauklaxon`.`trajets`
+FOR EACH ROW
+SET `NEW.places_disponibles` = `NEW.places`;
+
 
 CREATE USER 'admin' IDENTIFIED BY 'P@ssw0rd';
 

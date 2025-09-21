@@ -1,5 +1,6 @@
 <?php $isLogged = $isLogged ?? ''; ?>
 <?php $isAdmin = $isAdmin ?? ''; ?>
+<?php $viewAdmin = $viewAdmin ?? ''; ?>
 <?php $trajetModel = $trajetModel ?? null; ?>
 <?php $trajets = $trajets ?? []; ?>
 <?php $title = $title ?? 'Touche pas au klaxon'; ?>
@@ -9,7 +10,7 @@ if (!$isLogged)
 {
     echo '<h1>Pour obtenir plus d\'informations sur un trajet, veuillez vous connecter.</h1>';
 }
-elseif ($isAdmin) 
+elseif ($viewAdmin == true) 
 {
     echo '<h1>Gestion des trajets</h1>';
 }
@@ -46,7 +47,7 @@ else
             echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
             echo "<td>" . $trajet['date_destination']->format('d/m/Y') . "</td>";
             echo "<td>" . $trajet['date_destination']->format('H:i') . "</td>";
-            echo "<td>" . (int)($trajet['places']) . "</td>";
+            echo "<td>" . (int)($trajet['places_disponibles']) . "</td>";
             if ($isLogged) {
                 echo "<td>";
                 echo "<button type='button' class='btn btn-icon btn-detail' data-id='".(int)$trajet['id']."' aria-label='Détails' title='Détails'><img src='/img/eye.svg' alt='' class='icon'></button>";
@@ -60,7 +61,7 @@ else
                     echo "<button type='submit' class='btn btn-icon' value='Supprimer'><img src='/img/trash.svg' alt='' class='icon'></button>";
                     echo "</form>";
                 }
-                if ($isAdmin && $trajet['auteur'] !== $userId) {
+                if ($viewAdmin == true && $trajet['auteur'] !== $userId) {
                     echo "<form method='POST' action='/admin/trajets/delete' style='display:inline;'>";
                     echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
                     echo "<button type='submit' class='btn btn-icon' value='Supprimer'><img src='/img/trash.svg' alt='' class='icon'></button>";

@@ -1,4 +1,13 @@
 <?php
+/**
+ * Modèle pour la gestion des agences.
+ *
+ * Fournit des méthodes pour interagir avec la table `agences`
+ * dans la base de données.
+ *
+ * @category Agence
+ * @package  TouchePasAuKlaxon
+ */
 namespace Touchepasauklaxon\Models;
 
 use Touchepasauklaxon\Database;
@@ -10,11 +19,19 @@ class Agence {
 
     private ?string $lastError = null;
 
+    /**
+     * Constructeur de la classe Agence.
+     *
+     * @param PDO|null $db Instance PDO pour la connexion à la base de données.
+     *                     Si null, une nouvelle connexion sera créée.
+     */
     public function __construct(?PDO $db = null) {
         $this->db = $db ?? Database::getConnection();
     }
 
     /** 
+     * Récupère toutes les agences.
+     * 
       * @return array<int, array{
       *   id:int,
       *   ville:string
@@ -45,6 +62,8 @@ class Agence {
     }
     
     /** 
+     * Récupère une agence par son ID.
+     * 
       * @return array<int, array{
       *   id:int,
       *   ville:string
@@ -86,6 +105,13 @@ class Agence {
         }
     }
 
+    /**
+     * Supprime une agence par son ID.
+     * 
+     * @param int $id ID de l'agence à supprimer.
+     * 
+     * @return bool Succès ou échec de la suppression.
+     */
     public function deleteById(int $id): bool
     {
         try {
@@ -120,6 +146,11 @@ class Agence {
         }
     }
     /**
+     * Met à jour une agence par son ID.
+     * 
+     * @param int $id ID de l'agence à modifier.
+     * @param string $ville Nouvelle ville de l'agence.
+     * 
      * @return bool
      */
     public function updateById(int $id, string $ville): bool
@@ -163,6 +194,14 @@ class Agence {
         }
     }
 
+    /**
+     * Ajoute une nouvelle agence.
+     * 
+     * @param string $ville Ville de l'agence à ajouter.
+     * 
+     * @return bool Succès ou échec de l'ajout.
+     */
+
     public function add(string $ville): bool
     {
         $ville = trim($ville);
@@ -200,6 +239,11 @@ class Agence {
         }
     }
 
+    /**
+     * Retourne le dernier message d'erreur.
+     * 
+     * @return string|null Message d'erreur ou null s'il n'y a pas d'erreur.
+     */
     public function getLastError(): ?string
     {
         return $this->lastError ?? null;
