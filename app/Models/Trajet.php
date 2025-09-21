@@ -37,7 +37,13 @@ class Trajet {
                 JOIN agences a1 ON t.agence_depart = a1.id 
                 JOIN agences a2 ON t.agence_destination = a2.id");
             $stmt->execute();
-            return $stmt->fetchAll();
+            $rows = $stmt->fetchAll();
+            foreach ($rows as &$r) {
+                if (!empty($r['date_depart']))       { $r['date_depart']       = new DateTime($r['date_depart']); }
+                if (!empty($r['date_destination']))  { $r['date_destination']  = new DateTime($r['date_destination']); }
+            }
+            return $rows;
+
         } catch (PDOException $e) {
             error_log("Erreur lors de la récupération des trajets : " . $e->getMessage());
             $this->lastError = "Une erreur technique est survenue lors de la récupération des trajets. Veuillez réessayer plus tard.";
@@ -57,13 +63,15 @@ class Trajet {
      *   auteur_prenom:string,
      *   auteur_tel:string,
      *   auteur_email:string,
-     *   places:int
+     *   places:int,
+     *   agence_depart_ville:string,
+     *   agence_destination_ville:string,
      * }|null
      */
     public function getById(int $id) {
         try {
             $stmt = $this->db->prepare("
-                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart, a2.ville AS agence_destination, t.places 
+                SELECT t.id, t.auteur, u.nom AS auteur_nom, u.prenom AS auteur_prenom, u.tel AS auteur_tel, u.email AS auteur_email, t.date_depart, t.date_destination, a1.ville AS agence_depart_ville, a2.ville AS agence_destination_ville, t.places, t.agence_depart, t.agence_destination
                 FROM trajets t 
                 JOIN users u ON t.auteur = u.id 
                 JOIN agences a1 ON t.agence_depart = a1.id 
@@ -85,6 +93,8 @@ class Trajet {
                 'date_destination' => new DateTime($result['date_destination']),
                 'agence_depart' => (int)$result['agence_depart'],
                 'agence_destination' => (int)$result['agence_destination'],
+                'agence_depart_ville' => (string)$result['agence_depart_ville'],
+                'agence_destination_ville' => (string)$result['agence_destination_ville'],
                 'auteur_nom' => (string)$result['auteur_nom'],
                 'auteur_prenom' => (string)$result['auteur_prenom'],
                 'auteur_tel' => (string)$result['auteur_tel'],

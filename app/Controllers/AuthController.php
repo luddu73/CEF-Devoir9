@@ -22,7 +22,9 @@ class AuthController
             // Vérification des données du formulaire
             if (empty($_POST['email']) || empty($_POST['password'])) 
             {
-                echo "Veuillez remplir tous les champs.";
+                $_SESSION['flashMsg'] = "Veuillez remplir tous les champs.";
+                $_SESSION['flashMsgColor'] = "warning";
+                header("Location: /login");
                 exit;
             }
 
@@ -50,13 +52,17 @@ class AuthController
             } 
             else
             {
-                echo "Identifiants invalides.";
+                $_SESSION['flashMsg'] = "Identifiants invalides.";
+                $_SESSION['flashMsgColor'] = "danger";
+                header("Location: /login");
                 exit;
             }
         }
         else
         {
-            echo "Méthode de requête non autorisée.";
+            $_SESSION['flashMsg'] = "Méthode de requête non autorisée.";
+            $_SESSION['flashMsgColor'] = "danger";
+            header("Location: /login");
             exit;
         }
     }

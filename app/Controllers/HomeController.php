@@ -22,57 +22,11 @@ class HomeController
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
         $title = 'Accueil - Touche pas au Klaxon';
-
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
-        $flashMsg = $_SESSION['flashMsg'] ?? null;
-        if (is_string($flashMsg)) {
-            echo "<p><center>" . htmlspecialchars($flashMsg) . "</center></p>";
-            unset($_SESSION['flashMsg']);
-        }
-        echo "<h2>Liste des trajets</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Auteur</th><th>Date de départ</th><th>Date de destination</th><th>Ville de départ</th><th>Ville d'arrivée</th><th>Nombre de places</th>";
-        if ($isLogged) {
-            echo "<th>Actions</th>";
-        }
-        echo "</tr>";
-        if($trajetModel->getLastError()) {
-            echo "<tr><td colspan='8'>Erreur lors de la récupération des trajets : " . htmlspecialchars($trajetModel->getLastError()) . "</td></tr>";
-        } elseif (empty($trajets)) {
-            echo "<tr><td colspan='8'>Aucun trajet trouvé.</td></tr>";
-        } else {
-            foreach ($trajets as $trajet) {
-                echo "<tr>";
-                echo "<td>" . (int)($trajet['id']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
-                echo "<td>" . (int)($trajet['places']) . "</td>";
-                if ($isLogged) {
-                    echo "<td>";
-                    echo "<a href='/detail/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                    echo "<input type='button' value='Details'>";
-                    echo "</a>";
-                    $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
-                    if($trajet['auteur'] === $userId) {
-                        echo "<a href='/modifier/" . (int)($trajet['id']) . "' style='display:inline;'>";
-                        echo "<input type='button' value='Modifier'>";
-                        echo "</a>";
-                        echo "<form method='POST' action='/delete' style='display:inline;'>";
-                        echo "<input type='hidden' name='id' value='" . (int)($trajet['id']) . "'>";
-                        echo "<input type='submit' value='Supprimer'>";
-                        echo "</form>";
-                    }
-                }
-                echo "</tr>";
-            }
-        }
-        echo "</table>";
-
+        require_once dirname(__DIR__, 2) . '/app/Views/index.php';
+        require_once dirname(__DIR__, 2) . '/app/Views/components/modale.php';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
@@ -83,7 +37,6 @@ class HomeController
             header('Location: /');
             exit;
         }
-
         $title = 'Connexion - Touche pas au Klaxon';
         require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
         require_once dirname(__DIR__, 2) . '/app/Views/login.php';
@@ -118,6 +71,7 @@ class HomeController
         $trajet = $trajetModel->getById($id);
         if (!$trajet) {
             $_SESSION['flashMsg'] = "Trajet non trouvé.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
@@ -125,6 +79,7 @@ class HomeController
         $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
         if ($trajet['auteur'] !== $userId) {
             $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à modifier ce trajet.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
@@ -217,8 +172,13 @@ class HomeController
         $errors = $this->controleTrajet();
 
         if(!empty($errors)) {
-            $_SESSION['form_errors'] = $errors;
+            $_SESSION['flashMsg'] = '<ul class="mb-0">';
+            foreach ($errors as $msg) {
+                $_SESSION['flashMsg'] .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+            }
+            $_SESSION['flashMsg'] .= '</ul>';
             $_SESSION['input'] = $_POST;
+            $_SESSION['flashMsgColor'] = "warning";
             header('Location: /creer');
             exit;
         }
@@ -251,10 +211,12 @@ class HomeController
             $villeArrivee = (is_numeric($villeArrivee)) ? (int)$villeArrivee : 0;
             if($trajetModel->create($userId, $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
                 $_SESSION['flashMsg'] = "Trajet crée avec succès.";
+                $_SESSION['flashMsgColor'] = "success";
                 $_SESSION['input'] = $_POST;
                 header('Location: /creer');
             } else {
                 $_SESSION['flashMsg'] = "Erreur lors de la création du trajet : " . $trajetModel->getLastError();
+                $_SESSION['flashMsgColor'] = "danger";
                 $_SESSION['input'] = $_POST;
                 header('Location: /creer');
             }
@@ -274,6 +236,7 @@ class HomeController
         $trajet = $trajetModel->getById($id);
         if (!$trajet) {
             $_SESSION['flashMsg'] = "Trajet non trouvé.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
@@ -281,6 +244,7 @@ class HomeController
         $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
         if($trajet['auteur'] !== $userId) {
             $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à modifier ce trajet.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
@@ -288,8 +252,13 @@ class HomeController
         $errors = $this->controleTrajet();
 
         if(!empty($errors)) {
-            $_SESSION['form_errors'] = $errors;
+            $_SESSION['flashMsg'] = '<ul class="mb-0">';
+            foreach ($errors as $msg) {
+                $_SESSION['flashMsg'] .= '<li>' . htmlspecialchars($msg, ENT_QUOTES, 'UTF-8') . '</li>';
+            }
+            $_SESSION['flashMsg'] .= '</ul>';
             $_SESSION['input'] = $_POST;
+            $_SESSION['flashMsgColor'] = "warning";
             header('Location: /modifier/' . $id);
             exit;
         }
@@ -321,10 +290,12 @@ class HomeController
             $villeArrivee = (is_numeric($villeArrivee)) ? (int)$villeArrivee : 0;
             if($trajetModel->updateById($id, $userId, $dateDepart, $dateDestination, $places, $villeDepart, $villeArrivee)) {
                 $_SESSION['flashMsg'] = "Trajet modifié avec succès.";
+                $_SESSION['flashMsgColor'] = "success";
                 $_SESSION['input'] = $_POST;
                 header('Location: /modifier/' . $id);
             } else {
                 $_SESSION['flashMsg'] = "Erreur lors de la modification du trajet : " . $trajetModel->getLastError();
+                $_SESSION['flashMsgColor'] = "danger";
                 $_SESSION['input'] = $_POST;
                 header('Location: /modifier/' . $id);
             }
@@ -342,6 +313,7 @@ class HomeController
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID de trajet invalide.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
@@ -351,6 +323,7 @@ class HomeController
         $trajeta = $trajetModel->getById($id);
         if (!$trajeta) {
             $_SESSION['flashMsg'] = "Trajet non trouvé.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
@@ -358,14 +331,17 @@ class HomeController
         $userId = (is_array($_SESSION['user'] ?? null) && isset($_SESSION['user']['id'])) ? $_SESSION['user']['id'] : null;
         if ($trajeta['auteur'] !== $userId && !Auth::isAdmin()) {
             $_SESSION['flashMsg'] = "Vous n'êtes pas autorisé à supprimer ce trajet.";
+            $_SESSION['flashMsgColor'] = "danger";
             header('Location: /');
             exit;
         }
 
         if ($trajetModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Trajet supprimé avec succès.";
+            $_SESSION['flashMsgColor'] = "success";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression du trajet : " . $trajetModel->getLastError();
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header('Location: /');
         exit;
@@ -383,11 +359,12 @@ class HomeController
 
     public function viewTrajet(int $id): void
     {
+        header('Content-Type: application/json; charset=utf-8');
         $isLogged = $this->prepare();
         $isAdmin = Auth::isAdmin();
-       if(!$isLogged) {
-            header('Location: /login');
-            exit;
+        if(!$isLogged) {
+            $this->json(['error' => 'Non autorisé'], 401);
+            return;
         }
 
         $trajetModel = new Trajet();

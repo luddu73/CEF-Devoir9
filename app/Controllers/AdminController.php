@@ -19,12 +19,25 @@ class AdminController extends Auth
     public function index(): void
     {
         $this->prepare();
+        $isLogged = Auth::isLogged();
+        $isAdmin  = Auth::isAdmin();
+
         $userModel = new User();
         $users = $userModel->getAll();
 
+        $title = 'Liste des utilisateurs - Touche pas au Klaxon';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+
         echo "<h1>Liste des utilisateurs</h1>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Nom</th><th>Prénom</th><th>Email</th><th>Téléphone</th><th>Rôle</th></tr>";
+        echo "<table class='table w-100 m-3 text-center table-striped'>";
+        echo "<tr class='table-info'>
+            <th>ID</th>
+            <th>Nom</th>
+            <th>Prénom</th>
+            <th>Email</th>
+            <th>Téléphone</th>
+            <th>Rôle</th>
+        </tr>";
         
         foreach ($users as $user) {
             echo "<tr>";
@@ -38,24 +51,31 @@ class AdminController extends Auth
         }
         
         echo "</table>";
+        
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
     public function agences(): void
     {
         $this->prepare();
+        $isLogged = Auth::isLogged();
+        $isAdmin  = Auth::isAdmin();
+        
+        $title = 'Gestion des agences - Touche pas au Klaxon';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+
         echo "<h1>Gestion des agences</h1>";
         echo "<p>Cette section est réservée à la gestion des agences.</p>";
-        $flashMsg = $_SESSION['flashMsg'] ?? null;
-        if (is_string($flashMsg)) {
-            echo "<p><center>" . $flashMsg . "</center></p>";
-            unset($_SESSION['flashMsg']);
-        }
         $agenceModel = new Agence();
         $agences = $agenceModel->getAll();
 
         echo "<h2>Liste des agences</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Ville</th><th>Actions</th></tr>";
+        echo "<table class='table w-100 m-3 text-center table-striped'>";
+        echo "<tr class='table-info'>
+            <th>ID</th>
+            <th>Ville</th>
+            <th>Actions</th>
+        </tr>";
         
         if($agenceModel->getLastError()) {
             echo "<tr><td colspan='3'>Erreur lors de la récupération des agences : " . htmlspecialchars($agenceModel->getLastError()) . "</td></tr>";
@@ -67,23 +87,28 @@ class AdminController extends Auth
                 echo "<td>" . (int)($agence['id']) . "</td>";
                 echo "<td id='ville-cell-". (int)($agence['id']) ."'>";
                 echo htmlspecialchars($agence['ville']);
-                echo " | <button onclick='enableEdit(" . (int)($agence['id']) . ", " . json_encode($agence['ville']) . ")'>Modifier</button>";
+                echo " | <button onclick='enableEdit(" . (int)($agence['id']) . ", " . json_encode($agence['ville']) . ")' class='btn btn-icon'><img src='/img/pen.svg' alt='' class='icon'></button>";
                 echo "</td>";
                 echo "<td>";
                 echo "<form method='POST' action='/admin/agences/delete' style='display:inline;'>";
                 echo "<input type='hidden' name='id' value='" . (int)($agence['id']) . "'>";
-                echo "<input type='submit' value='Supprimer'>";
+                echo "<button type='submit' class='btn btn-danger'>Supprimer</button>";
                 echo "</form>";
                 echo "</td>";
                 echo "</tr>";
             }
         }
-        echo "</table>";
+        echo "</table>
+            <hr>";
         echo "<h2>Ajouter une nouvelle agence</h2>";
         echo "<form method='POST' action='/admin/agences/add'>";
-        echo "<label for='ville'>Ville : </label>";
-        echo "<input type='text' id='ville' name='ville' required>";
-        echo "<input type='submit' value='Ajouter'>";
+        echo '<div class="mb-3">';
+        echo "<label class='form-label' for='ville'>Ville : </label>";
+        echo "<input class='form-control' type='text' id='ville' name='ville' required>";
+        echo "</div>";
+        echo "<div class='mb-3'>";
+        echo "<button class='btn btn-primary' type='submit' value='Ajouter'>Ajouter</button>";
+        echo "</div>";
         echo "</form>";
         ?>
         <script>
@@ -93,13 +118,20 @@ class AdminController extends Auth
                 cell.innerHTML = `
                     <form method="POST" action="/admin/agences/edit" style="display:inline;">
                         <input type="hidden" name="id" value="${id}">
-                        <input type="text" name="ville" value="${ville}" required>
-                        <input type="submit" value="Valider">
+                        <div class="d-flex row justify-content-center">
+                            <div class="col-6 text-center m-0">
+                                <input type="text" class="form-control" name="ville" value="${ville}" required>
+                            </div>
+                            <div class="col-6 text-center m-0">
+                                <button type="submit" class="btn btn-primary">Valider</button>
+                            </div>
+                        </div>
                     </form>
                 `;
             }
         </script>
         <?php 
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
     public function addAgence(): void
@@ -112,14 +144,18 @@ class AdminController extends Auth
                 $agenceModel = new Agence();
                 if ($agenceModel->add($ville)) {
                     $_SESSION['flashMsg'] = "Agence ajoutée avec succès.";
+                    $_SESSION['flashMsgColor'] = "success";
                 } else {
                     $_SESSION['flashMsg'] = "Erreur lors de l'ajout de l'agence : " . $agenceModel->getLastError();
+                    $_SESSION['flashMsgColor'] = "danger";
                 }
             } else {
                 $_SESSION['flashMsg'] = "Veuillez remplir le champ ville.";
+                $_SESSION['flashMsgColor'] = "warning";
             }
         } else {
             $_SESSION['flashMsg'] = "Méthode de requête non autorisée.";
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/agences");
         exit;
@@ -136,14 +172,18 @@ class AdminController extends Auth
                 $id = isset($_POST['id']) && is_numeric($_POST['id']) ? (int) $_POST['id'] : 0;
                 if ($agenceModel->updateById($id, $ville)) {
                     $_SESSION['flashMsg'] = "Agence modifiée avec succès.";
+                    $_SESSION['flashMsgColor'] = "success";
                 } else {
                     $_SESSION['flashMsg'] = "Erreur lors de la modification de l'agence : " . $agenceModel->getLastError();
+                    $_SESSION['flashMsgColor'] = "danger";
                 }
             } else {
                 $_SESSION['flashMsg'] = "Veuillez remplir le champ ville.";
+                $_SESSION['flashMsgColor'] = "warning";
             }
         } else {
             $_SESSION['flashMsg'] = "Méthode de requête non autorisée.";
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/agences");
         exit;
@@ -155,6 +195,7 @@ class AdminController extends Auth
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID d'agence invalide.";
+            $_SESSION['flashMsgColor'] = "danger";
             header("Location: /admin/agences");
             exit;
         }
@@ -164,8 +205,10 @@ class AdminController extends Auth
         $agenceModel = new Agence();
         if ($agenceModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Agence supprimée avec succès.";
+            $_SESSION['flashMsgColor'] = "success";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression de l'agence : " . $agenceModel->getLastError();
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/agences");
         exit;
@@ -174,45 +217,25 @@ class AdminController extends Auth
     public function trajets(): void
     {
         $this->prepare();
-
-        echo "<h1>Gestion des trajets</h1>";
-        echo "<p>Cette section est réservée à la gestion des trajets.</p>";
+        $isLogged = Auth::isLogged();
+        $isAdmin  = Auth::isAdmin();
+        $viewAdmin = true;
+/*
         $flashMsg = $_SESSION['flashMsg'] ?? null;
         if (is_string($flashMsg)) {
             echo "<p><center>" . htmlspecialchars($flashMsg) . "</center></p>";
             unset($_SESSION['flashMsg']);
-        }
+        }*/
 
+        $title = 'Liste des trajets - Touche pas au Klaxon';
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/header.php';
+        
         $trajetModel = new Trajet();
         $trajets = $trajetModel->getAll();
 
-        echo "<h2>Liste des trajets</h2>";
-        echo "<table border='1'>";
-        echo "<tr><th>ID</th><th>Auteur</th><th>Date de départ</th><th>Date de destination</th><th>Ville de départ</th><th>Ville d'arrivée</th><th>Nombre de places</th><th>Actions</th></tr>";
-        if($trajetModel->getLastError()) {
-            echo "<tr><td colspan='8'>Erreur lors de la récupération des trajets : " . htmlspecialchars($trajetModel->getLastError()) . "</td></tr>";
-        } elseif (empty($trajets)) {
-            echo "<tr><td colspan='8'>Aucun trajet trouvé.</td></tr>";
-        } else {
-            foreach ($trajets as $trajet) {
-                echo "<tr>";
-                echo "<td>" . (int)$trajet['id'] . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['auteur_nom']) . " " . htmlspecialchars($trajet['auteur_prenom']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['date_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['date_destination']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['agence_depart']) . "</td>";
-                echo "<td>" . htmlspecialchars($trajet['agence_destination']) . "</td>";
-                echo "<td>" . (int)$trajet['places'] . "</td>";
-                echo "<td>";
-                echo "<form method='POST' action='/admin/trajets/delete' style='display:inline;'>";
-                echo "<input type='hidden' name='id' value='" . (int)$trajet['id'] . "'>";
-                echo "<input type='submit' value='Supprimer'>";
-                echo "</form>";
-                echo "</td>";
-                echo "</tr>";
-            }
-        }
-        echo "</table>";
+        require_once dirname(__DIR__, 2) . '/app/Views/index.php';
+
+        require_once dirname(__DIR__, 2) . '/app/Views/templates/footer.php';
     }
 
     public function deleteTrajet(): void
@@ -221,6 +244,7 @@ class AdminController extends Auth
 
         if (!isset($_POST['id']) || !is_numeric($_POST['id'])) {
             $_SESSION['flashMsg'] = "ID de trajet invalide.";
+            $_SESSION['flashMsgColor'] = "danger";
             header("Location: /admin/trajets");
             exit;
         }
@@ -230,8 +254,10 @@ class AdminController extends Auth
         $trajetModel = new Trajet();
         if ($trajetModel->deleteById($id)) {
             $_SESSION['flashMsg'] = "Trajet supprimé avec succès.";
+            $_SESSION['flashMsgColor'] = "success";
         } else {
             $_SESSION['flashMsg'] = "Erreur lors de la suppression du trajet : " . $trajetModel->getLastError();
+            $_SESSION['flashMsgColor'] = "danger";
         }
         header("Location: /admin/trajets");
         exit;
