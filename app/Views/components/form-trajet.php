@@ -106,19 +106,19 @@ $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel
     <!-- Champs utilisateur (non modifiables ici) -->
     <h2>Informations utilisateur</h2>
     <div class="mb-3">
-        <label for="nom" class="form-label">Nom</label>
+        <label for="inputNom" class="form-label">Nom</label>
         <input type="text" name="nom" class="form-control" id="inputNom"  disabled value="<?= h($userNom) ?>">
     </div>
     <div class="mb-3">
-        <label for="prenom" class="form-label">Prénom</label>
+        <label for="inputPrenom" class="form-label">Prénom</label>
         <input type="text" name="prenom" class="form-control" id="inputPrenom" disabled value="<?= h($userPrenom) ?>">
     </div>
     <div class="mb-3">
-        <label for="email" class="form-label">Email</label>
+        <label for="inputEmail" class="form-label">Email</label>
         <input type="email" name="email" class="form-control" id="inputEmail" disabled value="<?= h($userEmail) ?>">
     </div>
     <div class="mb-3">
-        <label for="tel" class="form-label">Téléphone</label>
+        <label for="inputTel" class="form-label">Téléphone</label>
         <input type="text" name="tel" class="form-control" id="inputTel" disabled value="<?= h($userTel) ?>">
     </div>
     <hr>
@@ -127,22 +127,22 @@ $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel
     <div class="d-flex flex-wrap justify-content-between">
         <div class="col-5">
             <div class="mb-3">
-                <label for="date_depart" class="form-label">Date de départ</label>
-                <input type="date" name="date_depart" class="form-control" id="inputDateDepart" value="<?= old('date_depart', $trajet) ?>">
+                <label for="inputDateDepart" class="form-label">Date de départ</label>
+                <input type="date" name="date_depart" class="form-control" id="inputDateDepart" value="<?= old('date_depart', $trajet) ?>" required>
             </div>
             <div class="mb-3">
-                <label for="heure_depart" class="form-label">Heure de départ</label>
-                <input type="time" name="heure_depart" class="form-control" id="inputHeureDepart" value="<?= old('heure_depart', $trajet) ?>">
+                <label for="inputHeureDepart" class="form-label">Heure de départ</label>
+                <input type="time" name="heure_depart" class="form-control" id="inputHeureDepart" value="<?= old('heure_depart', $trajet) ?>" required>
             </div>
         </div>
         <div class="col-5">
             <div class="mb-3">
-                <label for="date_destination" class="form-label">Date de destination</label>
-                <input type="date" name="date_destination" class="form-control" id="inputDateDestination" value="<?= old('date_destination', $trajet) ?>">
+                <label for="inputDateDestination" class="form-label">Date de destination</label>
+                <input type="date" name="date_destination" class="form-control" id="inputDateDestination" value="<?= old('date_destination', $trajet) ?>" required>
             </div>
             <div class="mb-3">
-                <label for="heure_destination" class="form-label">Heure de destination</label>
-                <input type="time" name="heure_destination" class="form-control" id="inputHeureDestination" value="<?= old('heure_destination', $trajet) ?>">
+                <label for="inputHeureDestination" class="form-label">Heure de destination</label>
+                <input type="time" name="heure_destination" class="form-control" id="inputHeureDestination" value="<?= old('heure_destination', $trajet) ?>" required>
             </div>
         </div>
         <div class="col-5">
@@ -151,10 +151,11 @@ $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel
                 <select id="agence_depart" name="agence_depart" class="form-select" required>
                     <option value="">Sélectionnez une agence</option>
                     <?php $selectedDepart = old('agence_depart', $trajet); ?>
+                    <?php echo $selectedDepart; ?>
                     <?php foreach ($agences as $ag): ?>
                         <?php
                         $agId   = is_int($ag['id']) ? $ag['id'] : (int)$ag['id'];
-                        $agVille = (string)$ag['ville']; // safe car filtré plus haut
+                        $agVille = (string)$ag['ville']; 
                         $isSelected = ($agVille === html_entity_decode($selectedDepart)) || ((string)$agId === html_entity_decode($selectedDepart));
                         ?>
                         <option value="<?= $agId ?>" <?= $isSelected ? 'selected' : '' ?>>
@@ -170,10 +171,11 @@ $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel
                 <select id="agence_destination" name="agence_destination" class="form-select" required>
                     <option value="">Sélectionnez une agence</option>
                     <?php $selectedArrivee = old('agence_destination', $trajet); ?>
+                    <?php echo $selectedArrivee; ?>
                     <?php foreach ($agences as $ag): ?>
                         <?php
                         $agId   = is_int($ag['id']) ? $ag['id'] : (int)$ag['id'];
-                        $agVille = (string)$ag['ville']; // safe car filtré plus haut
+                        $agVille = (string)$ag['ville']; 
                         $isSelected = ($agVille === html_entity_decode($selectedArrivee)) || ((string)$agId === html_entity_decode($selectedArrivee));
                         ?>
                         <option value="<?= $agId ?>" <?= $isSelected ? 'selected' : '' ?>>
@@ -185,8 +187,8 @@ $userTel    = is_array($user) && is_string($user['tel']    ?? null) ? $user['tel
         </div>
     </div>
     <div class="mb-3">
-        <label for="places" class="form-label">Nombre de places</label>
-        <input type="number" name="places" class="form-control" id="inputPlaces" value="<?= old('places', $trajet) ?>">
+        <label for="inputPlaces" class="form-label">Nombre de places</label>
+        <input type="number" name="places" class="form-control" id="inputPlaces" value="<?= old('places', $trajet) ?>" min="1" required>
     </div>
     <div class="text-center">
         <button type="submit" class="btn btn-primary">
