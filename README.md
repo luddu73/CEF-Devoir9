@@ -62,4 +62,4 @@ L'application sera accessible sur [http://localhost:8000](http://localhost:8000)
 
 
 ## 📁 Dossier du projet
-Vous retrouverez le dossier de présentation et de développement du projet à l'adresse suivante : [](a compléter)
+Vous retrouverez le dossier de présentation et de développement du projet à l'adresse suivante : [https://drive.google.com/file/d/110x8hcd9mt5239VjqYGw1XFK_gQ3cX8s/view?usp=sharing](https://drive.google.com/file/d/110x8hcd9mt5239VjqYGw1XFK_gQ3cX8s/view?usp=sharing)

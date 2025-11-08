@@ -61,7 +61,7 @@ CREATE TABLE IF NOT EXISTS `touchepasauklaxon`.`trajets` (
   PRIMARY KEY (`id`),
   INDEX `fk_user_idx` (`auteur` ASC) VISIBLE,
   INDEX `fk_agence_depart_idx` (`agence_depart` ASC) VISIBLE,
-  INDEX `fk_agence_destination_idx` (`agence_destination` ASC) INVISIBLE,
+  INDEX `fk_agence_destination_idx` (`agence_destination` ASC) VISIBLE,
   CONSTRAINT `fk_user`
     FOREIGN KEY (`auteur`)
     REFERENCES `touchepasauklaxon`.`users` (`id`)
@@ -90,10 +90,20 @@ ADD CONSTRAINT `chk_dates_valides`
 CHECK (`date_destination` > `date_depart`);
 
 -- Contrainte pour l'insertion d'un trajet fin que le nombre de place dispo soit égal aux places totales
-CREATE TRIGGER `before_insert_trajets`
+DELIMITER //
+
+DROP TRIGGER IF EXISTS before_insert_trajets;
+//
+CREATE TRIGGER before_insert_trajets
 BEFORE INSERT ON `touchepasauklaxon`.`trajets`
 FOR EACH ROW
-SET `NEW.places_disponibles` = `NEW.places`;
+BEGIN
+  -- On ignore toute valeur fournie, on aligne systématiquement
+  SET NEW.places_disponibles = NEW.places;
+END;
+//
+
+DELIMITER ;
 
 
 CREATE USER 'admin' IDENTIFIED BY 'P@ssw0rd';
