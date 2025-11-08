@@ -20,7 +20,7 @@ Développée en **PHP** avec une architecture **MVC**, elle propose un système 
 - PHP >= 8.1  
 - MySQL >= 8.0  
 - Composer installé  
-- (Optionnel) Node.js + npm, pour la compilation du CSS (via TailwindCSS)
+- (Optionnel) Node.js + npm, pour la compilation du CSS (via bootstrap et SASS)
 
 ### Étapes d’installation
 
