@@ -8,7 +8,6 @@ Développée en **PHP** avec une architecture **MVC**, elle propose un système 
 - Gestion des agences et des utilisateurs
 - Authentification avec gestion de session et rôles (utilisateur / admin)
 - Messages flash après les opérations d’écriture (ajout, modification, suppression)
-- Sécurisation des formulaires avec **tokens CSRF**
 - Respect de l’architecture **MVC** (Models, Views, Controllers)
 - Utilisation d’un **routeur PHP** ([izniburak/router](https://packagist.org/packages/izniburak/router))
 
@@ -62,4 +61,5 @@ L'application sera accessible sur [http://localhost:8000](http://localhost:8000)
 
 
 ## 📁 Dossier du projet
+
 Vous retrouverez le dossier de présentation et de développement du projet à l'adresse suivante : [https://drive.google.com/file/d/110x8hcd9mt5239VjqYGw1XFK_gQ3cX8s/view?usp=sharing](https://drive.google.com/file/d/110x8hcd9mt5239VjqYGw1XFK_gQ3cX8s/view?usp=sharing)
